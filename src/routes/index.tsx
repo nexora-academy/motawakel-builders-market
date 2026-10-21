@@ -66,14 +66,16 @@ function Index() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              to="/category/hordi"
+              to="/category/$slug"
+              params={{ slug: "hordi" }}
               className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-bold text-accent-foreground transition-transform hover:scale-[1.02]"
             >
               تسوق الهوردي
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <Link
-              to="/category/tools-basics"
+              to="/category/$slug"
+              params={{ slug: "tools-basics" }}
               className="inline-flex items-center gap-2 rounded-lg border border-primary-foreground/30 px-6 py-3 font-bold transition-colors hover:bg-primary-foreground/10"
             >
               تصفح الأقسام
