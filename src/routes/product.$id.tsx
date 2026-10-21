@@ -97,7 +97,7 @@ function ProductPage() {
         </div>
         <Button asChild variant="outline" className="mt-4">
           <a
-            href={whatsappLink(settings?.sales_whatsapp ?? "", quoteMessage)}
+            href={whatsappLink(settings?.["sales_whatsapp"] ?? "", quoteMessage)}
             target="_blank"
             rel="noreferrer"
           >

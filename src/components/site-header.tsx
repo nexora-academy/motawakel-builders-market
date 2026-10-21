@@ -19,10 +19,10 @@ import {
 } from "@/components/ui/sheet";
 
 export const CATEGORY_LINKS = [
-  { to: "/category/tools-basics", label: "أدوات البناء" },
-  { to: "/category/insulation-rolls", label: "رولات العزل" },
-  { to: "/category/plaster-tools", label: "أدوات اللياسة" },
-  { to: "/category/hordi", label: "الهوردي" },
+  { slug: "tools-basics", label: "أدوات البناء" },
+  { slug: "insulation-rolls", label: "رولات العزل" },
+  { slug: "plaster-tools", label: "أدوات اللياسة" },
+  { slug: "hordi", label: "الهوردي" },
 ] as const;
 
 type SessionState = {
@@ -91,8 +91,9 @@ export function SiteHeader() {
       </Link>
       {CATEGORY_LINKS.map((link) => (
         <Link
-          key={link.to}
-          to={link.to}
+          key={link.slug}
+          to="/category/$slug"
+          params={{ slug: link.slug }}
           className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
           activeProps={{ className: "bg-muted text-accent-foreground" }}
         >

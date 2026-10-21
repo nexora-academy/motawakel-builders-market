@@ -164,8 +164,12 @@ function SiteFooter() {
           <h4 className="font-display text-sm font-bold">الأقسام</h4>
           <ul className="mt-2 space-y-1 text-sm opacity-80">
             {CATEGORY_LINKS.map((link) => (
-              <li key={link.to}>
-                <Link to={link.to} className="hover:underline">
+              <li key={link.slug}>
+                <Link
+                  to="/category/$slug"
+                  params={{ slug: link.slug }}
+                  className="hover:underline"
+                >
                   {link.label}
                 </Link>
               </li>

@@ -565,6 +565,7 @@ function ProductRow({
 }
 
 function SettingsTab() {
+  const queryClient = useQueryClient();
   const settingsQuery = useQuery({
     queryKey: ["settings"],
     queryFn: async () => {
@@ -582,8 +583,8 @@ function SettingsTab() {
 
   useEffect(() => {
     if (settingsQuery.data && !loaded) {
-      setWhatsapp(settingsQuery.data.sales_whatsapp ?? "");
-      setStoreName(settingsQuery.data.store_name ?? "");
+      setWhatsapp(settingsQuery.data["sales_whatsapp"] ?? "");
+      setStoreName(settingsQuery.data["store_name"] ?? "");
       setLoaded(true);
     }
   }, [settingsQuery.data, loaded]);
@@ -604,11 +605,7 @@ function SettingsTab() {
         return;
       }
       toast.success("تم حفظ الإعدادات");
-      await Promise.all([
-        (async () => {
-          await (await import("@tanstack/react-query")).useQueryClient;
-        })(),
-      ]);
+      await queryClient.invalidateQueries({ queryKey: ["settings"] });
     } finally {
       setSaving(false);
     }

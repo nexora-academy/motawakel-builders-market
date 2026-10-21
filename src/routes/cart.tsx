@@ -147,7 +147,7 @@ function CartPage() {
         </Button>
         <Button asChild variant="outline" size="lg">
           <a
-            href={whatsappLink(settings?.sales_whatsapp ?? "", quoteMessage)}
+            href={whatsappLink(settings?.["sales_whatsapp"] ?? "", quoteMessage)}
             target="_blank"
             rel="noreferrer"
           >
