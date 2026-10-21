@@ -82,7 +82,7 @@ function CategoryPage() {
         <div className="mt-4 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm">
           محتاج مقاس ضغط أو مقاس تاني مش موجود؟{" "}
           <a
-            href={whatsappLink(settings?.sales_whatsapp ?? "", "السلام عليكم، محتاج هوردي بمقاس مخصص")}
+            href={whatsappLink(settings?.["sales_whatsapp"] ?? "", "السلام عليكم، محتاج هوردي بمقاس مخصص")}
             target="_blank"
             rel="noreferrer"
             className="font-bold underline"
@@ -113,7 +113,7 @@ function CategoryPage() {
           <div className="flex gap-2">
             <Button asChild variant="outline">
               <a
-                href={whatsappLink(settings?.sales_whatsapp ?? "", quoteMessage)}
+                href={whatsappLink(settings?.["sales_whatsapp"] ?? "", quoteMessage)}
                 target="_blank"
                 rel="noreferrer"
               >

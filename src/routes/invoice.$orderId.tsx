@@ -250,7 +250,7 @@ function InvoicePage() {
           </Button>
           <Button variant="outline" asChild>
             <a
-              href={whatsappLink(settings?.sales_whatsapp ?? "", waMessage)}
+              href={whatsappLink(settings?.["sales_whatsapp"] ?? "", waMessage)}
               target="_blank"
               rel="noreferrer"
             >
@@ -270,7 +270,7 @@ function InvoicePage() {
               </span>
               <div>
                 <h2 className="font-display text-xl font-bold">
-                  {settings?.store_name ?? "مؤسسة المتوكل للتجارة"}
+                  {settings?.["store_name"] ?? "مؤسسة المتوكل للتجارة"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   مواد بناء وعوازل
