@@ -228,12 +228,56 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_set_order_status: {
+        Args: { _order_id: string; _status: string }
+        Returns: undefined
+      }
+      admin_set_setting: {
+        Args: { _key: string; _value: string }
+        Returns: undefined
+      }
+      admin_update_order_item: {
+        Args: { _item_id: string; _quantity: number; _unit_price: number }
+        Returns: undefined
+      }
+      create_order: {
+        Args: {
+          _address?: string
+          _items: Json
+          _name: string
+          _notes?: string
+          _phone: string
+          _user_id?: string
+        }
+        Returns: {
+          access_code: string
+          order_id: string
+          order_number: string
+          total: number
+        }[]
+      }
+      get_order_customer: {
+        Args: { _access_code: string; _order_id: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      link_order_to_user: {
+        Args: { _access_code: string; _order_id: string }
+        Returns: undefined
+      }
+      set_order_paid: {
+        Args: { _access_code: string; _order_id: string }
+        Returns: undefined
+      }
+      set_payment_id: {
+        Args: { _access_code: string; _order_id: string; _payment_id: string }
+        Returns: undefined
       }
     }
     Enums: {
