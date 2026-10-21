@@ -3,9 +3,9 @@ import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { getProduct } from "@/lib/store.functions";
-import { useCart } from "@/lib/cart";
 import { formatSAR, whatsappLink } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
+import { Button } from "@/components/ui/button";
 
 function queryOptionsForProduct(id: string) {
   return queryOptions({
@@ -25,12 +25,13 @@ export const Route = createFileRoute("/product/$id")({
       if (!product) throw notFound();
     }),
   component: ProductPage,
-  head: ({ params }) => ({
+  head: () => ({
     meta: [
       { title: "تفاصيل المنتج | مؤسسة المتوكل للتجارة" },
       {
         name: "description",
-        content: `تفاصيل المنتج ${params.id} من مؤسسة المتوكل للتجارة — السعر والكمية وإضافة للسلة.`,
+        content:
+          "تفاصيل المنتج وسعره من مؤسسة المتوكل للتجارة — حدد الكمية وأضفها للسلة.",
       },
       { property: "og:title", content: "تفاصيل المنتج | مؤسسة المتوكل للتجارة" },
       {
@@ -42,15 +43,6 @@ export const Route = createFileRoute("/product/$id")({
     ],
   }),
 });
-
-import { queryOptions } from "@tanstack/react-query";
-
-function queryOptionsForProduct(id: string) {
-  return queryOptions({
-    queryKey: ["product", id],
-    queryFn: () => getProduct({ data: { id } }),
-  });
-}
 
 function ProductPage() {
   const { id } = Route.useParams();
