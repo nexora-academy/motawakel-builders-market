@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   createOrderSchema,
   type CreateOrderInput,
@@ -54,10 +55,14 @@ export const createOrder = createServerFn({ method: "POST" })
   });
 
 export const linkOrderToUser = createServerFn({ method: "POST" })
-  .middleware([]) // replaced below with auth middleware at build
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: { orderId: string; accessCode: string }) => input)
-  .handler(async ({ data }) => {
-    throw new Error("NOT_IMPLEMENTED");
+  .handler(async ({ data, context }): Promise<{ ok: boolean }> => {
+    const { error } = await context.supabase.rpc("link_order_to_user", {
+      _order_id: data.orderId,
+      _access_code: data.accessCode,
+    });
+    return { ok: !error };
   });
 
 export const getOrderWithCode = createServerFn({ method: "POST" })
