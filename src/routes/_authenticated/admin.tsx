@@ -605,11 +605,7 @@ function SettingsTab() {
         return;
       }
       toast.success("تم حفظ الإعدادات");
-      await Promise.all([
-        (async () => {
-          await (await import("@tanstack/react-query")).useQueryClient;
-        })(),
-      ]);
+      await queryClient.invalidateQueries({ queryKey: ["settings"] });
     } finally {
       setSaving(false);
     }
