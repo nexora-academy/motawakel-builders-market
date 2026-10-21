@@ -565,6 +565,7 @@ function ProductRow({
 }
 
 function SettingsTab() {
+  const queryClient = useQueryClient();
   const settingsQuery = useQuery({
     queryKey: ["settings"],
     queryFn: async () => {
