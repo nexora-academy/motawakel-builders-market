@@ -25,12 +25,13 @@ export const Route = createFileRoute("/product/$id")({
       if (!product) throw notFound();
     }),
   component: ProductPage,
-  head: ({ params }) => ({
+  head: () => ({
     meta: [
       { title: "تفاصيل المنتج | مؤسسة المتوكل للتجارة" },
       {
         name: "description",
-        content: `تفاصيل المنتج ${params.id} من مؤسسة المتوكل للتجارة — السعر والكمية وإضافة للسلة.`,
+        content:
+          "تفاصيل المنتج وسعره من مؤسسة المتوكل للتجارة — حدد الكمية وأضفها للسلة.",
       },
       { property: "og:title", content: "تفاصيل المنتج | مؤسسة المتوكل للتجارة" },
       {
