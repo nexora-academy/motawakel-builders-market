@@ -1,11 +1,18 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { getProduct } from "@/lib/store.functions";
 import { useCart } from "@/lib/cart";
 import { formatSAR, whatsappLink } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
+
+function queryOptionsForProduct(id: string) {
+  return queryOptions({
+    queryKey: ["product", id],
+    queryFn: () => getProduct({ data: { id } }),
+  });
+}
 
 export const Route = createFileRoute("/product/$id")({
   loader: ({ context, params }) =>
