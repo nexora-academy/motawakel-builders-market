@@ -113,11 +113,13 @@ export type Database = {
       orders: {
         Row: {
           access_code: string
+          company_name: string | null
           created_at: string
           customer_address: string | null
           customer_name: string
           customer_phone: string
           id: string
+          national_address: string | null
           notes: string | null
           order_number: string
           payment_id: string | null
@@ -125,14 +127,17 @@ export type Database = {
           total: number
           updated_at: string
           user_id: string | null
+          vat_number: string | null
         }
         Insert: {
           access_code: string
+          company_name?: string | null
           created_at?: string
           customer_address?: string | null
           customer_name: string
           customer_phone: string
           id?: string
+          national_address?: string | null
           notes?: string | null
           order_number: string
           payment_id?: string | null
@@ -140,14 +145,17 @@ export type Database = {
           total?: number
           updated_at?: string
           user_id?: string | null
+          vat_number?: string | null
         }
         Update: {
           access_code?: string
+          company_name?: string | null
           created_at?: string
           customer_address?: string | null
           customer_name?: string
           customer_phone?: string
           id?: string
+          national_address?: string | null
           notes?: string | null
           order_number?: string
           payment_id?: string | null
@@ -155,6 +163,7 @@ export type Database = {
           total?: number
           updated_at?: string
           user_id?: string | null
+          vat_number?: string | null
         }
         Relationships: []
       }
@@ -163,6 +172,7 @@ export type Database = {
           category_id: string
           created_at: string
           id: string
+          image_url: string | null
           in_stock: boolean
           is_active: boolean
           name_ar: string
@@ -175,6 +185,7 @@ export type Database = {
           category_id: string
           created_at?: string
           id?: string
+          image_url?: string | null
           in_stock?: boolean
           is_active?: boolean
           name_ar: string
@@ -187,6 +198,7 @@ export type Database = {
           category_id?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           in_stock?: boolean
           is_active?: boolean
           name_ar?: string
@@ -243,11 +255,14 @@ export type Database = {
       create_order: {
         Args: {
           _address?: string
+          _company?: string
           _items: Json
           _name: string
+          _national_address?: string
           _notes?: string
           _phone: string
           _user_id?: string
+          _vat?: string
         }
         Returns: {
           access_code: string
