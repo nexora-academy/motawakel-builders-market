@@ -120,6 +120,63 @@
   }
 }
 
+/* عمق ثلاثي الأبعاد */
+:root {
+  --shadow-3d:
+    0 1px 0 color-mix(in oklab, var(--foreground) 6%, transparent),
+    0 10px 24px -12px color-mix(in oklab, var(--foreground) 35%, transparent),
+    0 30px 60px -30px color-mix(in oklab, var(--accent) 45%, transparent);
+  --shadow-3d-lift:
+    0 2px 0 color-mix(in oklab, var(--foreground) 6%, transparent),
+    0 24px 40px -16px color-mix(in oklab, var(--foreground) 40%, transparent),
+    0 40px 80px -30px color-mix(in oklab, var(--accent) 60%, transparent);
+  --gradient-hero:
+    radial-gradient(120% 90% at 15% 20%, color-mix(in oklab, var(--accent) 35%, transparent), transparent 60%),
+    linear-gradient(160deg, var(--primary), color-mix(in oklab, var(--primary) 70%, black));
+  --gradient-block: linear-gradient(155deg, var(--card), var(--secondary));
+}
+
+@utility shadow-3d {
+  box-shadow: var(--shadow-3d);
+}
+
+@utility bg-hero {
+  background: var(--gradient-hero);
+}
+
+@utility bg-block {
+  background: var(--gradient-block);
+}
+
+@utility perspective-stage {
+  perspective: 1200px;
+}
+
+/* بطاقة بتميل مع المؤشر — القيم بتتحدث من الكود عبر --rx و --ry */
+@utility card-3d {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
+  transition:
+    transform 0.25s ease-out,
+    box-shadow 0.25s ease-out;
+  box-shadow: var(--shadow-3d);
+  will-change: transform;
+
+  &:hover {
+    box-shadow: var(--shadow-3d-lift);
+  }
+}
+
+@utility pop-out {
+  transform: translateZ(40px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-3d {
+    transform: none !important;
+  }
+}
+
 /* طباعة الفاتورة كـ PDF */
 @media print {
   @page {
