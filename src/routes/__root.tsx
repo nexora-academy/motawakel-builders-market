@@ -13,7 +13,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "@/lib/cart";
-import { SiteHeader, CATEGORY_LINKS } from "@/components/site-header";
+import { SiteHeader, CATEGORY_LINKS, SALES_PHONE } from "@/components/site-header";
+import { BrandLogo } from "@/components/brand-logo";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -155,10 +156,13 @@ function SiteFooter() {
     <footer className="no-print border-t bg-primary text-primary-foreground">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <h3 className="font-display text-lg font-bold">مؤسسة المتوكل للتجارة</h3>
-          <p className="mt-2 text-sm opacity-80">
-            متخصصون في تجارة مواد البناء والعوازل — جودة تُبنى عليها.
+          <BrandLogo />
+          <p className="mt-3 text-sm opacity-80">
+            مؤسسة المتوكل للتجارة — متخصصون في تجارة مواد البناء والعوازل.
           </p>
+          <a href={`tel:${SALES_PHONE}`} className="mt-3 inline-block text-sm font-bold hover:underline">
+            رقم المبيعات: <span dir="ltr">{SALES_PHONE}</span>
+          </a>
         </div>
         <div>
           <h4 className="font-display text-sm font-bold">الأقسام</h4>
@@ -174,6 +178,11 @@ function SiteFooter() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link to="/hordi" className="hover:underline">
+                الهوردي
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
