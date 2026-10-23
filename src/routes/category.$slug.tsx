@@ -1,13 +1,17 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { useCart } from "@/lib/cart";
-import { formatSAR, whatsappLink } from "@/lib/format";
+import { DEFAULT_SALES_WHATSAPP, formatSAR, whatsappLink } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/category/$slug")({
+  beforeLoad: ({ params }) => {
+    // الهوردي ليه تبويب خاص مقسم بالضغط
+    if (params.slug === "hordi") throw redirect({ to: "/hordi" });
+  },
   loader: ({ context }) => context.queryClient.ensureQueryData(catalogQueryOptions),
   component: CategoryPage,
   head: ({ params }) => ({
@@ -82,7 +86,7 @@ function CategoryPage() {
         <div className="mt-4 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm">
           محتاج مقاس ضغط أو مقاس تاني مش موجود؟{" "}
           <a
-            href={whatsappLink(settings?.["sales_whatsapp"] ?? "", "السلام عليكم، محتاج هوردي بمقاس مخصص")}
+            href={whatsappLink(settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP, "السلام عليكم، محتاج هوردي بمقاس مخصص")}
             target="_blank"
             rel="noreferrer"
             className="font-bold underline"
@@ -99,7 +103,7 @@ function CategoryPage() {
       ) : (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={p.id} product={p} categorySlug={slug} />
           ))}
         </div>
       )}
@@ -113,7 +117,7 @@ function CategoryPage() {
           <div className="flex gap-2">
             <Button asChild variant="outline">
               <a
-                href={whatsappLink(settings?.["sales_whatsapp"] ?? "", quoteMessage)}
+                href={whatsappLink(settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP, quoteMessage)}
                 target="_blank"
                 rel="noreferrer"
               >

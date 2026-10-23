@@ -27,6 +27,9 @@ export type CustomerOrder = {
   total: number;
   created_at: string;
   payment_id: string | null;
+  company_name: string | null;
+  vat_number: string | null;
+  national_address: string | null;
   items: CustomerOrderItem[];
 };
 
@@ -41,6 +44,9 @@ export const createOrder = createServerFn({ method: "POST" })
       _address: data.address || null,
       _notes: data.notes || null,
       _user_id: null,
+      _company: data.company,
+      _vat: data.vat || null,
+      _national_address: data.nationalAddress,
     });
     if (error || !result || result.length === 0) {
       throw new Error("ORDER_CREATE_FAILED");

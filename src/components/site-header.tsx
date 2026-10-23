@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  HardHat,
+  Phone,
   ShoppingCart,
   Menu,
   LogOut,
@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
+import { DEFAULT_SALES_WHATSAPP, localPhone, whatsappLink } from "@/lib/format";
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -22,8 +24,9 @@ export const CATEGORY_LINKS = [
   { slug: "tools-basics", label: "أدوات البناء" },
   { slug: "insulation-rolls", label: "رولات العزل" },
   { slug: "plaster-tools", label: "أدوات اللياسة" },
-  { slug: "hordi", label: "الهوردي" },
 ] as const;
+
+export const SALES_PHONE = localPhone(DEFAULT_SALES_WHATSAPP);
 
 type SessionState = {
   userId: string | null;
@@ -100,24 +103,40 @@ export function SiteHeader() {
           {link.label}
         </Link>
       ))}
+      <Link
+        to="/hordi"
+        className="rounded-md px-3 py-2 text-sm font-bold transition-colors hover:bg-muted"
+        activeProps={{ className: "bg-accent text-accent-foreground hover:bg-accent" }}
+      >
+        الهوردي
+      </Link>
     </>
   );
 
   return (
-    <header className="no-print sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="no-print sticky top-0 z-50 border-b bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="bg-primary text-primary-foreground">
+        <div className="mx-auto flex h-8 max-w-7xl items-center justify-between gap-3 px-4 text-xs">
+          <span className="truncate opacity-80">مواد بناء وعوازل — توصيل لموقعك</span>
+          <span className="flex items-center gap-3">
+            <a href={`tel:${SALES_PHONE}`} className="inline-flex items-center gap-1 font-bold hover:underline">
+              <Phone className="h-3 w-3" />
+              المبيعات: <span dir="ltr">{SALES_PHONE}</span>
+            </a>
+            <a
+              href={whatsappLink(DEFAULT_SALES_WHATSAPP, "السلام عليكم، محتاج استفسار")}
+              target="_blank"
+              rel="noreferrer"
+              className="hidden font-bold hover:underline sm:inline"
+            >
+              واتساب
+            </a>
+          </span>
+        </div>
+      </div>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <HardHat className="h-6 w-6" />
-          </span>
-          <span className="leading-tight">
-            <span className="block font-display text-base font-bold">
-              مؤسسة المتوكل
-            </span>
-            <span className="block text-[11px] text-muted-foreground">
-              للتجارة — مواد بناء وعوازل
-            </span>
-          </span>
+        <Link to="/" aria-label="مؤسسة المتوكل — الرئيسية">
+          <BrandLogo />
         </Link>
 
         <nav className="mr-4 hidden items-center gap-1 lg:flex">{navLinks}</nav>

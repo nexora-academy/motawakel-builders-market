@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, MessageCircle, ShoppingCart, Trash2 } from "lucide-react";
 import { settingsQueryOptions } from "@/lib/queries";
 import { useCart } from "@/lib/cart";
-import { formatSAR, whatsappLink } from "@/lib/format";
+import { DEFAULT_SALES_WHATSAPP, formatSAR, whatsappLink } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -147,7 +147,7 @@ function CartPage() {
         </Button>
         <Button asChild variant="outline" size="lg">
           <a
-            href={whatsappLink(settings?.["sales_whatsapp"] ?? "", quoteMessage)}
+            href={whatsappLink(settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP, quoteMessage)}
             target="_blank"
             rel="noreferrer"
           >

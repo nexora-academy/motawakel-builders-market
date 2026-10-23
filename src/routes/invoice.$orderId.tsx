@@ -12,17 +12,22 @@ import {
 } from "@/lib/orders.functions";
 import { createPayment, checkPayment } from "@/lib/moyasar.functions";
 import {
+  DEFAULT_SALES_WHATSAPP,
   formatSAR,
+  localPhone,
+  orderNoticeMessage,
   ORDER_STATUS_LABELS,
   ORDER_STATUS_STYLES,
   whatsappLink,
 } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LogoMark } from "@/components/brand-logo";
 import { toast } from "sonner";
 
 const invoiceSearchSchema = z.object({
   code: z.string().optional(),
+  notify: z.enum(["sent", "pending"]).optional(),
 });
 
 export const Route = createFileRoute("/invoice/$orderId")({
@@ -57,6 +62,9 @@ type OrderRow = {
   total: number;
   created_at: string;
   payment_id: string | null;
+  company_name: string | null;
+  vat_number: string | null;
+  national_address: string | null;
   order_items: {
     id: string;
     product_name_ar: string;
@@ -79,6 +87,9 @@ function mapRow(row: OrderRow): CustomerOrder {
     total: Number(row.total),
     created_at: row.created_at,
     payment_id: row.payment_id,
+    company_name: row.company_name,
+    vat_number: row.vat_number,
+    national_address: row.national_address,
     items: (row.order_items ?? []).map((it) => ({
       id: it.id,
       product_name_ar: it.product_name_ar,
@@ -92,7 +103,7 @@ function mapRow(row: OrderRow): CustomerOrder {
 
 function InvoicePage() {
   const { orderId } = Route.useParams();
-  const { code } = Route.useSearch();
+  const { code, notify } = Route.useSearch();
   const [order, setOrder] = useState<CustomerOrder | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "missing">("loading");
   const [paying, setPaying] = useState(false);
@@ -110,7 +121,7 @@ function InvoicePage() {
         const res = await supabase
           .from("orders")
           .select(
-            "id, order_number, status, customer_name, customer_phone, customer_address, notes, total, created_at, payment_id, order_items(id, product_name_ar, specs_ar, unit_ar, quantity, unit_price)",
+            "id, order_number, status, customer_name, customer_phone, customer_address, notes, total, created_at, payment_id, company_name, vat_number, national_address, order_items(id, product_name_ar, specs_ar, unit_ar, quantity, unit_price)",
           )
           .eq("id", orderId)
           .maybeSingle();
@@ -214,14 +225,25 @@ function InvoicePage() {
       order.status === "processing" ||
       order.status === "awaiting_payment");
 
-  const waMessage = [
-    `طلب رقم ${order.order_number}`,
-    ...order.items.map(
-      (it) =>
-        `• ${it.product_name_ar}${it.specs_ar ? ` (${it.specs_ar})` : ""} — ${it.quantity} ${it.unit_ar} — ${formatSAR(it.quantity * it.unit_price)}`,
-    ),
-    `الإجمالي: ${formatSAR(order.total)}`,
-  ].join("\n");
+  const salesWa = settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP;
+  const waMessage = orderNoticeMessage({
+    orderNumber: order.order_number,
+    company: order.company_name ?? order.customer_name,
+    vat: order.vat_number,
+    nationalAddress: order.national_address ?? order.customer_address ?? "—",
+    name: order.customer_name,
+    phone: order.customer_phone,
+    items: order.items.map((it) => ({
+      name: it.product_name_ar,
+      specs: it.specs_ar,
+      qty: it.quantity,
+      unit: it.unit_ar,
+      lineTotal: it.quantity * it.unit_price,
+    })),
+    total: order.total,
+    invoiceUrl: `${window.location.origin}/invoice/${order.id}${code ? `?code=${code}` : ""}`,
+  });
+  const waHref = whatsappLink(salesWa, waMessage);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -250,30 +272,53 @@ function InvoicePage() {
           </Button>
           <Button variant="outline" asChild>
             <a
-              href={whatsappLink(settings?.["sales_whatsapp"] ?? "", waMessage)}
+              href={waHref}
               target="_blank"
               rel="noreferrer"
             >
               <MessageCircle className="h-4 w-4" />
-              واتساب المبيعات
+              إرسال للمسؤول على واتساب
             </a>
           </Button>
         </div>
       </div>
 
-      <div className="rounded-2xl border bg-card p-6 sm:p-8">
+      {notify && (
+        <div className="no-print mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent/50 bg-accent/15 p-4 shadow-3d">
+          <div>
+            <p className="font-display font-bold">
+              {notify === "sent"
+                ? "اتفتح واتساب برسالة الطلب — اضغط إرسال عشان توصل للمسؤول"
+                : "خطوة أخيرة: ابعت الطلب للمسؤول على واتساب"}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              الرسالة بتروح على رقم المبيعات <span dir="ltr">{localPhone(salesWa)}</span> وفيها
+              بيانات الشركة والأغراض ورابط الفاتورة.
+            </p>
+          </div>
+          <Button asChild>
+            <a href={waHref} target="_blank" rel="noreferrer">
+              <MessageCircle className="h-4 w-4" />
+              {notify === "sent" ? "فتح واتساب تاني" : "إرسال على واتساب"}
+            </a>
+          </Button>
+        </div>
+      )}
+
+      <div className="rounded-2xl border bg-card p-6 shadow-3d sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4 border-b pb-6">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground font-display text-lg font-bold">
-                م
-              </span>
+              <LogoMark className="h-14" />
               <div>
                 <h2 className="font-display text-xl font-bold">
                   {settings?.["store_name"] ?? "مؤسسة المتوكل للتجارة"}
                 </h2>
+                <p dir="ltr" className="text-right font-display text-[10px] font-extrabold tracking-[0.3em] text-muted-foreground">
+                  ALMOTAWAKEL
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  مواد بناء وعوازل
+                  مواد بناء وعوازل — المبيعات: <span dir="ltr">{localPhone(salesWa)}</span>
                 </p>
               </div>
             </div>
@@ -296,19 +341,35 @@ function InvoicePage() {
 
         <div className="grid gap-4 border-b py-6 text-sm sm:grid-cols-3">
           <div>
-            <p className="text-muted-foreground">العميل</p>
-            <p className="font-bold">{order.customer_name}</p>
+            <p className="text-muted-foreground">الشركة / المؤسسة</p>
+            <p className="font-bold">{order.company_name || order.customer_name}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">الجوال</p>
-            <p dir="ltr" className="font-bold">
-              {order.customer_phone}
+            <p className="text-muted-foreground">الرقم الضريبي</p>
+            <p dir="ltr" className="text-right font-bold">
+              {order.vat_number || "—"}
             </p>
           </div>
           <div>
-            <p className="text-muted-foreground">العنوان / الموقع</p>
-            <p className="font-bold">{order.customer_address || "—"}</p>
+            <p className="text-muted-foreground">رقم التواصل</p>
+            <p dir="ltr" className="text-right font-bold">
+              {order.customer_phone}
+            </p>
           </div>
+          <div className="sm:col-span-2">
+            <p className="text-muted-foreground">العنوان الوطني</p>
+            <p className="font-bold">{order.national_address || "—"}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">اسم المسؤول</p>
+            <p className="font-bold">{order.customer_name}</p>
+          </div>
+          {order.customer_address && (
+            <div className="sm:col-span-3">
+              <p className="text-muted-foreground">موقع التسليم</p>
+              <p className="font-bold">{order.customer_address}</p>
+            </div>
+          )}
         </div>
 
         <table className="mt-6 w-full text-sm">

@@ -17,6 +17,8 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
+import { Route as HordiIndexRouteImport } from './routes/hordi.index'
+import { Route as HordiPressureRouteImport } from './routes/hordi.$pressure'
 import { Route as InvoiceOrderIdRouteImport } from './routes/invoice.$orderId'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 
@@ -59,6 +61,16 @@ const CategorySlugRoute = CategorySlugRouteImport.update({
   path: '/category/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HordiIndexRoute = HordiIndexRouteImport.update({
+  id: '/hordi/',
+  path: '/hordi/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HordiPressureRoute = HordiPressureRouteImport.update({
+  id: '/hordi/$pressure',
+  path: '/hordi/$pressure',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InvoiceOrderIdRoute = InvoiceOrderIdRouteImport.update({
   id: '/invoice/$orderId',
   path: '/invoice/$orderId',
@@ -78,8 +90,10 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/hordi/$pressure': typeof HordiPressureRoute
   '/invoice/$orderId': typeof InvoiceOrderIdRoute
   '/product/$id': typeof ProductIdRoute
+  '/hordi/': typeof HordiIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -89,8 +103,10 @@ export interface FileRoutesByTo {
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/hordi/$pressure': typeof HordiPressureRoute
   '/invoice/$orderId': typeof InvoiceOrderIdRoute
   '/product/$id': typeof ProductIdRoute
+  '/hordi': typeof HordiIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -102,8 +118,10 @@ export interface FileRoutesById {
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/hordi/$pressure': typeof HordiPressureRoute
   '/invoice/$orderId': typeof InvoiceOrderIdRoute
   '/product/$id': typeof ProductIdRoute
+  '/hordi/': typeof HordiIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -115,8 +133,10 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/category/$slug'
+    | '/hordi/$pressure'
     | '/invoice/$orderId'
     | '/product/$id'
+    | '/hordi/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -126,8 +146,10 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/category/$slug'
+    | '/hordi/$pressure'
     | '/invoice/$orderId'
     | '/product/$id'
+    | '/hordi'
   id:
     | '__root__'
     | '/'
@@ -138,8 +160,10 @@ export interface FileRouteTypes {
     | '/_authenticated/account'
     | '/_authenticated/admin'
     | '/category/$slug'
+    | '/hordi/$pressure'
     | '/invoice/$orderId'
     | '/product/$id'
+    | '/hordi/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -149,8 +173,10 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   CategorySlugRoute: typeof CategorySlugRoute
+  HordiPressureRoute: typeof HordiPressureRoute
   InvoiceOrderIdRoute: typeof InvoiceOrderIdRoute
   ProductIdRoute: typeof ProductIdRoute
+  HordiIndexRoute: typeof HordiIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -211,6 +237,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategorySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hordi/': {
+      id: '/hordi/'
+      path: '/hordi'
+      fullPath: '/hordi/'
+      preLoaderRoute: typeof HordiIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hordi/$pressure': {
+      id: '/hordi/$pressure'
+      path: '/hordi/$pressure'
+      fullPath: '/hordi/$pressure'
+      preLoaderRoute: typeof HordiPressureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invoice/$orderId': {
       id: '/invoice/$orderId'
       path: '/invoice/$orderId'
@@ -248,8 +288,10 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   CategorySlugRoute: CategorySlugRoute,
+  HordiPressureRoute: HordiPressureRoute,
   InvoiceOrderIdRoute: InvoiceOrderIdRoute,
   ProductIdRoute: ProductIdRoute,
+  HordiIndexRoute: HordiIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
