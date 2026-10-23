@@ -3,7 +3,8 @@ import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { getProduct } from "@/lib/store.functions";
-import { formatSAR, whatsappLink } from "@/lib/format";
+import { DEFAULT_SALES_WHATSAPP, formatSAR, whatsappLink } from "@/lib/format";
+import { productImage } from "@/lib/product-images";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 
@@ -97,7 +98,7 @@ function ProductPage() {
         </div>
         <Button asChild variant="outline" className="mt-4">
           <a
-            href={whatsappLink(settings?.["sales_whatsapp"] ?? "", quoteMessage)}
+            href={whatsappLink(settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP, quoteMessage)}
             target="_blank"
             rel="noreferrer"
           >
