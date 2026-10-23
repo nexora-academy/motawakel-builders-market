@@ -35,7 +35,9 @@ import {
   Save,
   Settings2,
   ShieldAlert,
+  ImagePlus,
 } from "lucide-react";
+import { PRODUCT_IMAGE_BUCKET, STORAGE_IMAGE_PREFIX, productImage } from "@/lib/product-images";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
@@ -74,6 +76,9 @@ type AdminOrder = {
   total: number;
   created_at: string;
   access_code: string;
+  company_name: string | null;
+  vat_number: string | null;
+  national_address: string | null;
   order_items: AdminOrderItem[];
 };
 
@@ -86,6 +91,7 @@ type AdminProduct = {
   price: number;
   in_stock: boolean;
   is_active: boolean;
+  image_url: string | null;
 };
 
 type AdminCategory = { id: string; name_ar: string };
@@ -176,7 +182,7 @@ function OrdersTab() {
       const { data, error } = await supabase
         .from("orders")
         .select(
-          "id, order_number, status, customer_name, customer_phone, customer_address, notes, total, created_at, access_code, order_items(id, product_name_ar, specs_ar, unit_ar, quantity, unit_price)",
+          "id, order_number, status, customer_name, customer_phone, customer_address, notes, total, created_at, access_code, company_name, vat_number, national_address, order_items(id, product_name_ar, specs_ar, unit_ar, quantity, unit_price)",
         )
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -241,6 +247,7 @@ function OrderCard({
                 {order.order_number}
               </CardTitle>
               <p className="text-xs text-muted-foreground">
+                {order.company_name ? `${order.company_name} — ` : ""}
                 {order.customer_name} —{" "}
                 <span dir="ltr">{order.customer_phone}</span> —{" "}
                 {new Date(order.created_at).toLocaleDateString("ar-EG")}
@@ -276,6 +283,20 @@ function OrderCard({
       </CardHeader>
       {open && (
         <CardContent className="border-t pt-4">
+          <div className="mb-2 grid gap-1 text-sm sm:grid-cols-2">
+            <p>
+              <span className="text-muted-foreground">الشركة: </span>
+              {order.company_name || "—"}
+            </p>
+            <p>
+              <span className="text-muted-foreground">الرقم الضريبي: </span>
+              <span dir="ltr">{order.vat_number || "—"}</span>
+            </p>
+            <p className="sm:col-span-2">
+              <span className="text-muted-foreground">العنوان الوطني: </span>
+              {order.national_address || "—"}
+            </p>
+          </div>
           {order.customer_address && (
             <p className="text-sm">
               <span className="text-muted-foreground">العنوان: </span>
@@ -382,7 +403,7 @@ function ProductsTab() {
       const { data } = await supabase
         .from("products")
         .select(
-          "id, category_id, name_ar, specs_ar, unit_ar, price, in_stock, is_active",
+          "id, category_id, name_ar, specs_ar, unit_ar, price, in_stock, is_active, image_url",
         )
         .order("sort_order");
       return (data ?? []).map((p) => ({
@@ -513,9 +534,50 @@ function ProductRow({
     }
   }
 
+  async function uploadImage(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("اختار ملف صورة");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("الصورة أكبر من 5 ميجا");
+      return;
+    }
+    setSaving(true);
+    try {
+      const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const path = `products/${product.id}-${Date.now()}.${ext || "jpg"}`;
+      const { error } = await supabase.storage
+        .from(PRODUCT_IMAGE_BUCKET)
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (error) {
+        toast.error("تعذر رفع الصورة");
+        return;
+      }
+      await update({ image_url: `${STORAGE_IMAGE_PREFIX}${path}` });
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <Card>
       <CardContent className="flex flex-wrap items-center gap-3 py-3">
+        <ProductThumb imageUrl={product.image_url} />
+        <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-1 text-xs hover:bg-muted">
+          <ImagePlus className="h-3 w-3" />
+          صورة
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) void uploadImage(f);
+              e.target.value = "";
+            }}
+          />
+        </label>
         <div className="min-w-0 flex-1">
           <p className="font-display font-bold">{product.name_ar}</p>
           <p className="text-xs text-muted-foreground">
@@ -561,6 +623,35 @@ function ProductRow({
         </Button>
       </CardContent>
     </Card>
+  );
+}
+
+function ProductThumb({ imageUrl }: { imageUrl: string | null }) {
+  const [src, setSrc] = useState<string | null>(null);
+  useEffect(() => {
+    let active = true;
+    if (imageUrl?.startsWith(STORAGE_IMAGE_PREFIX)) {
+      void supabase.storage
+        .from(PRODUCT_IMAGE_BUCKET)
+        .createSignedUrl(imageUrl.slice(STORAGE_IMAGE_PREFIX.length), 3600)
+        .then(({ data }) => {
+          if (active) setSrc(data?.signedUrl ?? null);
+        });
+    } else {
+      setSrc(imageUrl ? productImage(imageUrl) : null);
+    }
+    return () => {
+      active = false;
+    };
+  }, [imageUrl]);
+  return (
+    <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-secondary">
+      {src ? (
+        <img src={src} alt="" className="h-full w-full object-cover" />
+      ) : (
+        <ImagePlus className="h-4 w-4 text-muted-foreground" />
+      )}
+    </span>
   );
 }
 
