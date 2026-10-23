@@ -42,3 +42,12 @@ export function sanitizeNextPath(next: string | null | undefined): string {
   if (!next || !next.startsWith("/") || next.startsWith("//")) return "/";
   return next;
 }
+
+// 966501215513 → 0501215513 (عرض الرقم بالشكل المحلي السعودي)
+export function localPhone(intl: string | null | undefined): string {
+  const digits = (intl ?? "").replace(/[^\d]/g, "");
+  if (digits.startsWith("966")) return `0${digits.slice(3)}`;
+  return digits;
+}
+
+export const DEFAULT_SALES_WHATSAPP = "966501215513";
