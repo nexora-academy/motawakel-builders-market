@@ -15,7 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { HardHat, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { LogoMark } from "@/components/brand-logo";
 
 const authSearchSchema = z.object({
   next: z.string().optional(),
@@ -124,9 +125,7 @@ function AuthPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-12">
       <div className="mb-6 text-center">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-          <HardHat className="h-7 w-7" />
-        </span>
+        <LogoMark className="mx-auto h-16" />
         <h1 className="mt-3 font-display text-2xl font-bold">
           مؤسسة المتوكل للتجارة
         </h1>
