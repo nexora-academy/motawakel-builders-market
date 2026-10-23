@@ -12,6 +12,7 @@ import {
 } from "@/lib/orders.functions";
 import { createPayment, checkPayment } from "@/lib/moyasar.functions";
 import {
+  DEFAULT_SALES_WHATSAPP,
   formatSAR,
   ORDER_STATUS_LABELS,
   ORDER_STATUS_STYLES,
@@ -250,7 +251,7 @@ function InvoicePage() {
           </Button>
           <Button variant="outline" asChild>
             <a
-              href={whatsappLink(settings?.["sales_whatsapp"] ?? "", waMessage)}
+              href={whatsappLink(settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP, waMessage)}
               target="_blank"
               rel="noreferrer"
             >
