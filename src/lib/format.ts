@@ -51,3 +51,36 @@ export function localPhone(intl: string | null | undefined): string {
 }
 
 export const DEFAULT_SALES_WHATSAPP = "966501215513";
+
+export type OrderNotice = {
+  orderNumber: string;
+  company: string;
+  vat?: string | null;
+  nationalAddress: string;
+  name: string;
+  phone: string;
+  items: { name: string; specs?: string | null; qty: number; unit: string; lineTotal: number }[];
+  total: number;
+  invoiceUrl: string;
+};
+
+// رسالة إشعار الطلب الجديد اللي بتروح لواتساب المسؤول
+export function orderNoticeMessage(o: OrderNotice): string {
+  return [
+    `🧾 طلب جديد رقم ${o.orderNumber}`,
+    `الشركة: ${o.company}`,
+    o.vat ? `الرقم الضريبي: ${o.vat}` : null,
+    `العنوان الوطني: ${o.nationalAddress}`,
+    `المسؤول: ${o.name} — ${o.phone}`,
+    "",
+    ...o.items.map(
+      (it) =>
+        `• ${it.name}${it.specs ? ` (${it.specs})` : ""} — ${it.qty} ${it.unit} — ${formatSAR(it.lineTotal)}`,
+    ),
+    "",
+    `الإجمالي: ${formatSAR(o.total)}`,
+    `الفاتورة: ${o.invoiceUrl}`,
+  ]
+    .filter((l): l is string => l !== null)
+    .join("\n");
+}
