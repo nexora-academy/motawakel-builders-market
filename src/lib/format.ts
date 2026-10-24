@@ -67,7 +67,7 @@ export type OrderNotice = {
 // رسالة إشعار الطلب الجديد اللي بتروح لواتساب المسؤول
 export function orderNoticeMessage(o: OrderNotice): string {
   return [
-    `🧾 طلب جديد رقم ${o.orderNumber}`,
+    `طلب جديد رقم ${o.orderNumber}`,
     `الشركة: ${o.company}`,
     o.vat ? `الرقم الضريبي: ${o.vat}` : null,
     `العنوان الوطني: ${o.nationalAddress}`,
