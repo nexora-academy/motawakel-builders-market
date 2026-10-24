@@ -26,8 +26,7 @@ const p = (x: number, y: number): Point => [r(x), r(y)];
 function buildComb(): Point[] {
   const pts: Point[] = [p(150, APEX_Y), p(xR(BASE_Y), BASE_Y), p(xL(BASE_Y), BASE_Y)];
   // نطلع لفوق على الحافة الشمال ونفرّغ كل خط أفقي
-  for (let i = CUTS.length - 1; i >= 0; i--) {
-    const [top, bottom] = CUTS[i];
+  for (const [top, bottom] of [...CUTS].reverse()) {
     pts.push(p(xL(bottom), bottom), p(xS(bottom), bottom), p(xS(top), top), p(xL(top), top));
   }
   return pts;

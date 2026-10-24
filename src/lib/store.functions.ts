@@ -91,7 +91,7 @@ export const getProduct = createServerFn({ method: "GET" })
     const [resolved] = await resolveImages(supabase, [
       { ...(row as Product), price: Number(row.price) },
     ]);
-    return resolved;
+    return resolved ?? null;
   });
 
 export const getSettings = createServerFn({ method: "GET" }).handler(

@@ -17,9 +17,9 @@ export function ProductCard({
   subtitle,
 }: {
   product: Product;
-  categorySlug?: string;
-  title?: string;
-  subtitle?: string | null;
+  categorySlug?: string | undefined;
+  title?: string | undefined;
+  subtitle?: string | null | undefined;
 }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
