@@ -10,7 +10,6 @@ import { useCart } from "@/lib/cart";
 import {
   DEFAULT_SALES_WHATSAPP,
   formatSAR,
-  localPhone,
   orderNoticeMessage,
   whatsappLink,
 } from "@/lib/format";
@@ -182,8 +181,8 @@ function CheckoutPage() {
     <div className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="font-display text-3xl font-bold">إتمام الشراء</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        اكتب بيانات الفاتورة — أول ما تأكد الطلب بيوصل للمسؤول على واتساب{" "}
-        <span dir="ltr">{localPhone(salesWa)}</span>.
+        اكتب بيانات الفاتورة — أول ما تأكد الطلب بيوصل لمسؤول المبيعات على واتساب
+        مباشرة.
       </p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-5">
