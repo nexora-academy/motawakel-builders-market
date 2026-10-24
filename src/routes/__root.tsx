@@ -13,7 +13,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "@/lib/cart";
-import { SiteHeader, CATEGORY_LINKS, SALES_PHONE } from "@/components/site-header";
+import { SiteHeader, CATEGORY_LINKS } from "@/components/site-header";
+import { Facebook, Instagram } from "lucide-react";
+import { SOCIAL_LINKS } from "@/lib/social";
 import { BrandLogo } from "@/components/brand-logo";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -160,9 +162,26 @@ function SiteFooter() {
           <p className="mt-3 text-sm opacity-80">
             مؤسسة المتوكل للتجارة — متخصصون في تجارة مواد البناء والعوازل.
           </p>
-          <a href={`tel:${SALES_PHONE}`} className="mt-3 inline-block text-sm font-bold hover:underline">
-            رقم المبيعات: <span dir="ltr">{SALES_PHONE}</span>
-          </a>
+          <div className="mt-4 flex gap-2">
+            <a
+              href={SOCIAL_LINKS.facebook}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="فيسبوك مؤسسة المتوكل"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/10 transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              <Facebook className="h-5 w-5" />
+            </a>
+            <a
+              href={SOCIAL_LINKS.instagram}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="إنستجرام مؤسسة المتوكل"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/10 transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              <Instagram className="h-5 w-5" />
+            </a>
+          </div>
         </div>
         <div>
           <h4 className="font-display text-sm font-bold">الأقسام</h4>
@@ -188,6 +207,11 @@ function SiteFooter() {
         <div>
           <h4 className="font-display text-sm font-bold">روابط سريعة</h4>
           <ul className="mt-2 space-y-1 text-sm opacity-80">
+            <li>
+              <Link to="/about" className="hover:underline">
+                من نحن
+              </Link>
+            </li>
             <li>
               <Link to="/cart" className="hover:underline">
                 سلة المشتريات

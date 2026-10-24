@@ -5,14 +5,12 @@ import {
   BadgeCheck,
   Building2,
   MessageCircle,
-  Phone,
   Truck,
   Wallet,
 } from "lucide-react";
 import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { CATEGORY_IMAGES } from "@/lib/product-images";
-import { HORDI_PRESSURES } from "@/lib/hordi";
-import { DEFAULT_SALES_WHATSAPP, localPhone, whatsappLink } from "@/lib/format";
+import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { Hero3D } from "@/components/hero-3d";
 import { Tilt } from "@/components/tilt";
 import heroImage from "@/assets/hero.jpg";
@@ -50,7 +48,6 @@ function Index() {
   const { data: catalog } = useSuspenseQuery(catalogQueryOptions);
   const { data: settings } = useQuery(settingsQueryOptions);
   const salesWa = settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP;
-  const salesPhone = localPhone(salesWa);
 
   return (
     <div>
@@ -84,19 +81,21 @@ function Index() {
               رولات العزل، أدوات اللياسة، والهوردي بكل الضغوط والمقاسات.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                to="/hordi"
+              <a
+                href={whatsappLink(salesWa, "السلام عليكم، محتاج عرض سعر من مؤسسة المتوكل")}
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 font-bold text-accent-foreground shadow-3d transition-transform hover:-translate-y-0.5"
               >
-                تسوق الهوردي
-                <ArrowLeft className="h-4 w-4" />
-              </Link>
+                <MessageCircle className="h-4 w-4" />
+                اطلب عرض سعر على واتساب
+              </a>
               <a
-                href={`tel:${salesPhone}`}
+                href="#categories"
                 className="inline-flex items-center gap-2 rounded-xl border border-primary-foreground/30 px-6 py-3 font-bold transition-colors hover:bg-primary-foreground/10"
               >
-                <Phone className="h-4 w-4" />
-                <span dir="ltr">{salesPhone}</span>
+                تصفح الأقسام
+                <ArrowLeft className="h-4 w-4" />
               </a>
             </div>
           </div>
@@ -107,7 +106,7 @@ function Index() {
       </section>
 
       {/* الأقسام */}
-      <section className="mx-auto max-w-7xl px-4 py-16">
+      <section id="categories" className="mx-auto max-w-7xl scroll-mt-28 px-4 py-16">
         <h2 className="font-display text-2xl font-bold sm:text-3xl">أقسامنا</h2>
         <p className="mt-1 text-muted-foreground">
           اختر القسم وابدأ إضافة اللي محتاجه للسلة
@@ -138,46 +137,13 @@ function Index() {
         </div>
       </section>
 
-      {/* الهوردي حسب الضغط */}
-      <section className="border-y bg-secondary/60">
-        <div className="mx-auto max-w-7xl px-4 py-14">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="font-display text-2xl font-bold sm:text-3xl">
-                الهوردي حسب الضغط
-              </h2>
-              <p className="mt-1 text-muted-foreground">
-                اختار الضغط وهتلاقي كل المقاسات المتاحة
-              </p>
-            </div>
-            <Link to="/hordi" className="text-sm font-bold underline">
-              كل الهوردي
-            </Link>
-          </div>
-          <div className="mt-8 grid grid-cols-3 gap-4 sm:grid-cols-6">
-            {HORDI_PRESSURES.map((p) => (
-              <Tilt key={p} max={14} className="rounded-2xl border bg-block">
-                <Link
-                  to="/hordi/$pressure"
-                  params={{ pressure: String(p) }}
-                  className="flex flex-col items-center gap-1 py-6"
-                >
-                  <span className="text-xs text-muted-foreground">ضغط</span>
-                  <span className="pop-out font-display text-4xl font-extrabold">{p}</span>
-                </Link>
-              </Tilt>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ليه نحن */}
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { icon: Building2, title: "خبرة في مواد البناء", text: "تنوع يغطي احتياجات موقعك كاملة" },
           { icon: Wallet, title: "دفع إلكتروني آمن", text: "ادفع بسهولة ببطاقتك البنكية" },
           { icon: Truck, title: "فاتورة باسم شركتك", text: "بالرقم الضريبي والعنوان الوطني" },
-          { icon: MessageCircle, title: "عرض سعر على واتساب", text: `كلم المبيعات على ${salesPhone}` },
+          { icon: MessageCircle, title: "عرض سعر على واتساب", text: "ابعت طلبك ويوصل للمبيعات على طول" },
         ].map((f) => (
           <div key={f.title} className="flex gap-3">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground shadow-3d">
@@ -217,7 +183,7 @@ function Index() {
           <div>
             <p className="font-display text-lg font-bold">محتاج مساعدة أو عرض سعر؟</p>
             <p className="text-sm opacity-80">
-              رقم المبيعات: <span dir="ltr">{salesPhone}</span>
+              ابعت رسالتك على واتساب وتوصل لمسؤول المبيعات على طول.
             </p>
           </div>
           <a

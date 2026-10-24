@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  Phone,
+  MessageCircle,
   ShoppingCart,
   Menu,
   LogOut,
@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
-import { DEFAULT_SALES_WHATSAPP, localPhone, whatsappLink } from "@/lib/format";
+import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +25,6 @@ export const CATEGORY_LINKS = [
   { slug: "insulation-rolls", label: "رولات العزل" },
   { slug: "plaster-tools", label: "أدوات اللياسة" },
 ] as const;
-
-export const SALES_PHONE = localPhone(DEFAULT_SALES_WHATSAPP);
 
 type SessionState = {
   userId: string | null;
@@ -118,20 +116,15 @@ export function SiteHeader() {
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto flex h-8 max-w-7xl items-center justify-between gap-3 px-4 text-xs">
           <span className="truncate opacity-80">مواد بناء وعوازل — توصيل لموقعك</span>
-          <span className="flex items-center gap-3">
-            <a href={`tel:${SALES_PHONE}`} className="inline-flex items-center gap-1 font-bold hover:underline">
-              <Phone className="h-3 w-3" />
-              المبيعات: <span dir="ltr">{SALES_PHONE}</span>
-            </a>
-            <a
-              href={whatsappLink(DEFAULT_SALES_WHATSAPP, "السلام عليكم، محتاج استفسار")}
-              target="_blank"
-              rel="noreferrer"
-              className="hidden font-bold hover:underline sm:inline"
-            >
-              واتساب
-            </a>
-          </span>
+          <a
+            href={whatsappLink(DEFAULT_SALES_WHATSAPP, "السلام عليكم، محتاج عرض سعر من مؤسسة المتوكل")}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 font-bold hover:underline"
+          >
+            <MessageCircle className="h-3 w-3" />
+            اطلب عرض سعر على واتساب
+          </a>
         </div>
       </div>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4">

@@ -14,7 +14,6 @@ import { createPayment, checkPayment } from "@/lib/moyasar.functions";
 import {
   DEFAULT_SALES_WHATSAPP,
   formatSAR,
-  localPhone,
   orderNoticeMessage,
   ORDER_STATUS_LABELS,
   ORDER_STATUS_STYLES,
@@ -292,8 +291,8 @@ function InvoicePage() {
                 : "خطوة أخيرة: ابعت الطلب للمسؤول على واتساب"}
             </p>
             <p className="text-sm text-muted-foreground">
-              الرسالة بتروح على رقم المبيعات <span dir="ltr">{localPhone(salesWa)}</span> وفيها
-              بيانات الشركة والأغراض ورابط الفاتورة.
+              الرسالة بتوصل لمسؤول المبيعات مباشرة وفيها بيانات الشركة والأغراض ورابط
+              الفاتورة.
             </p>
           </div>
           <Button asChild>
@@ -318,7 +317,7 @@ function InvoicePage() {
                   ALMOTAWAKEL
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  مواد بناء وعوازل — المبيعات: <span dir="ltr">{localPhone(salesWa)}</span>
+                  مواد بناء وعوازل
                 </p>
               </div>
             </div>
