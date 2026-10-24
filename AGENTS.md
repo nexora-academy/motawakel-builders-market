@@ -17,3 +17,7 @@
 - Admin credentials use the phone-number convention: an identifier without "@" signs in as <identifier>@mutawakkil.store.
 - Moyasar payment integration reads MOYASAR_API_KEY inside the handler; when the key is absent the UI degrades gracefully (button explains payment is not active yet) instead of erroring.
 - The site is Arabic-only RTL; UI copy is Egyptian-flavored MSA, invoice/catalog data uses Modern Standard Arabic. Do not add hardcoded color classes — use the semantic tokens in src/styles.css (sand/asphalt/amber construction palette).
+- Product photos live in products.image_url: either a CDN/absolute URL, or `storage:<path>` for admin uploads in the private `product-images` bucket (public buckets are blocked); getCatalog/getProduct turn `storage:` paths into signed URLs server-side. Missing images fall back to the category image (src/lib/product-images.ts).
+- Hordi is browsed by pressure at /hordi and /hordi/$pressure; the pressure is parsed from specs_ar ("ضغط N") and the size from name_ar, so new hordi products must keep that wording. /category/hordi redirects to /hordi.
+- The sales WhatsApp number is never rendered as text on public pages; it is only used behind wa.me buttons (quote requests and the new-order notice built by orderNoticeMessage).
+- The home-page 3D hero (src/components/hero-scene.tsx, React Three Fiber) is lazy-loaded client-only behind a mount check so SSR never touches WebGL; logo geometry is shared from src/lib/logo-geometry.ts by the SVG logo, the 3D logo and the favicon.
