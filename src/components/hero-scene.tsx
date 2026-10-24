@@ -63,16 +63,15 @@ function LogoMesh() {
     return g;
   }, []);
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (!ref.current) return;
     const t = state.clock.elapsedTime;
     ref.current.rotation.y = Math.sin(t * 0.5) * 0.55 + state.pointer.x * 0.35;
     ref.current.rotation.x = -state.pointer.y * 0.15;
-    ref.current.position.y += (1.35 - ref.current.position.y) * (1 - Math.exp(-3 * delta));
   });
 
   return (
-    <group ref={ref} position={[0, 1.35, 0]} scale={0.0062}>
+    <group ref={ref} position={[0, 1.05, 0]} scale={0.0052}>
       <mesh geometry={geometry} castShadow>
         <meshStandardMaterial color={ASPHALT} metalness={0.55} roughness={0.32} />
       </mesh>
@@ -105,7 +104,7 @@ function BlockStack() {
     if (group.current) group.current.rotation.y += Math.min(delta, 0.05) * 0.12;
   });
   return (
-    <group ref={group} position={[0, -1.15, 0]}>
+    <group ref={group} position={[0, -1.55, 0]}>
       <HordiBlock map={foam} position={[0, 0, -0.36]} />
       <HordiBlock map={foam} position={[0, 0, 0.36]} />
       <HordiBlock map={foam} position={[0, 0.44, 0]} rotation={Math.PI / 2} />
@@ -122,7 +121,7 @@ export default function HeroScene() {
     <Canvas
       shadows
       dpr={[1, 1.75]}
-      camera={{ position: [0, 0.6, 7.2], fov: 38 }}
+      camera={{ position: [0, 0.4, 7.6], fov: 40 }}
       gl={{ antialias: true, alpha: true }}
       style={{ background: "transparent" }}
     >
@@ -144,7 +143,7 @@ export default function HeroScene() {
         <LogoMesh />
       </Float>
       <BlockStack />
-      <ContactShadows position={[0, -1.42, 0]} opacity={0.45} scale={8} blur={2.4} far={3} />
+      <ContactShadows position={[0, -1.82, 0]} opacity={0.45} scale={8} blur={2.4} far={3} />
     </Canvas>
   );
 }
