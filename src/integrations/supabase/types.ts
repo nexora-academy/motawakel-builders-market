@@ -128,6 +128,7 @@ export type Database = {
           updated_at: string
           user_id: string | null
           vat_number: string | null
+          vat_rate: number
         }
         Insert: {
           access_code: string
@@ -146,6 +147,7 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
           vat_number?: string | null
+          vat_rate?: number
         }
         Update: {
           access_code?: string
@@ -164,6 +166,7 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
           vat_number?: string | null
+          vat_rate?: number
         }
         Relationships: []
       }
@@ -240,6 +243,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_delete_order: { Args: { _order_id: string }; Returns: undefined }
       admin_set_order_status: {
         Args: { _order_id: string; _status: string }
         Returns: undefined

@@ -60,6 +60,11 @@ export type OrderNotice = {
   name: string;
   phone: string;
   items: { name: string; specs?: string | null; qty: number; unit: string; lineTotal: number }[];
+  /** الإجمالي قبل الضريبة */
+  subtotal: number;
+  /** قيمة ضريبة القيمة المضافة */
+  vat: number;
+  /** الإجمالي شامل الضريبة */
   total: number;
   invoiceUrl: string;
 };
@@ -78,7 +83,9 @@ export function orderNoticeMessage(o: OrderNotice): string {
         `• ${it.name}${it.specs ? ` (${it.specs})` : ""} — ${it.qty} ${it.unit} — ${formatSAR(it.lineTotal)}`,
     ),
     "",
-    `الإجمالي: ${formatSAR(o.total)}`,
+    `الإجمالي قبل الضريبة: ${formatSAR(o.subtotal)}`,
+    `ضريبة القيمة المضافة 15%: ${formatSAR(o.vat)}`,
+    `الإجمالي شامل الضريبة: ${formatSAR(o.total)}`,
     `الفاتورة: ${o.invoiceUrl}`,
   ]
     .filter((l): l is string => l !== null)
