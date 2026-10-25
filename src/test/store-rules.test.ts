@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { PRODUCT_UNITS, normalizeUnit } from "@/lib/units";
 import { createOrderSchema } from "@/lib/schemas";
 import { parsePressure, parseSize, productsForPressure, isHordiPressure } from "@/lib/hordi";
 import { DEFAULT_SALES_WHATSAPP, orderNoticeMessage, whatsappLink } from "@/lib/format";
@@ -70,5 +71,18 @@ describe("order notice to sales on WhatsApp", () => {
     expect(msg).toContain("300000000000003");
     expect(msg).toContain("الرياض 12214");
     expect(msg).toContain("MTW-2026-00010");
+  });
+});
+
+describe("admin product units", () => {
+  it("offers cm, roll and carton as ready units", () => {
+    expect(PRODUCT_UNITS).toContain("سم");
+    expect(PRODUCT_UNITS).toContain("لفة");
+    expect(PRODUCT_UNITS).toContain("كرتونة");
+  });
+
+  it("falls back to قطعة when the unit is left empty", () => {
+    expect(normalizeUnit("  ")).toBe("قطعة");
+    expect(normalizeUnit(" كرتونة ")).toBe("كرتونة");
   });
 });

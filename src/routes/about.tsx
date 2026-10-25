@@ -12,6 +12,7 @@ import {
 import { settingsQueryOptions } from "@/lib/queries";
 import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { SOCIAL_LINKS } from "@/lib/social";
+import { TikTokIcon } from "@/components/tiktok-icon";
 import { LogoMark } from "@/components/brand-logo";
 import { Tilt } from "@/components/tilt";
 import { Button } from "@/components/ui/button";
@@ -121,6 +122,12 @@ function AboutPage() {
               <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noreferrer">
                 <Instagram className="h-4 w-4" />
                 إنستجرام
+              </a>
+            </Button>
+            <Button asChild variant="outline">
+              <a href={SOCIAL_LINKS.tiktok} target="_blank" rel="noreferrer">
+                <TikTokIcon className="h-4 w-4" />
+                تيك توك
               </a>
             </Button>
           </div>

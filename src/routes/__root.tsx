@@ -16,6 +16,7 @@ import { CartProvider } from "@/lib/cart";
 import { SiteHeader, CATEGORY_LINKS } from "@/components/site-header";
 import { Facebook, Instagram } from "lucide-react";
 import { SOCIAL_LINKS } from "@/lib/social";
+import { TikTokIcon } from "@/components/tiktok-icon";
 import { BrandLogo } from "@/components/brand-logo";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -180,6 +181,15 @@ function SiteFooter() {
               className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/10 transition-colors hover:bg-accent hover:text-accent-foreground"
             >
               <Instagram className="h-5 w-5" />
+            </a>
+            <a
+              href={SOCIAL_LINKS.tiktok}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="تيك توك مؤسسة المتوكل"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/10 transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              <TikTokIcon className="h-5 w-5" />
             </a>
           </div>
         </div>
