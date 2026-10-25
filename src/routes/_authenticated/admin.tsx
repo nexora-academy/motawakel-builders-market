@@ -36,8 +36,22 @@ import {
   Settings2,
   ShieldAlert,
   ImagePlus,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { PRODUCT_IMAGE_BUCKET, STORAGE_IMAGE_PREFIX, productImage } from "@/lib/product-images";
+import { PRODUCT_UNITS, normalizeUnit } from "@/lib/units";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
@@ -421,7 +435,12 @@ function ProductsTab() {
     <div className="mt-4 space-y-4">
       <AddProductForm categories={cats} onAdded={() => void queryClient.invalidateQueries({ queryKey: ["admin-products"] })} />
       {prods.map((p) => (
-        <ProductRow key={p.id} product={p} categoryName={catName(p.category_id)} />
+        <ProductRow
+          key={`${p.id}-${p.name_ar}-${p.unit_ar}-${p.specs_ar ?? ""}-${p.category_id}`}
+          product={p}
+          categoryName={catName(p.category_id)}
+          categories={cats}
+        />
       ))}
     </div>
   );
@@ -452,7 +471,7 @@ function AddProductForm({
         name_ar: name.trim(),
         category_id: categoryId,
         specs_ar: specs.trim() || null,
-        unit_ar: unit.trim() || "قطعة",
+        unit_ar: normalizeUnit(unit),
         price: Number(price),
         sort_order: 999,
       });
@@ -492,7 +511,7 @@ function AddProductForm({
           </SelectContent>
         </Select>
         <Input placeholder="المواصفات" value={specs} onChange={(e) => setSpecs(e.target.value)} maxLength={100} />
-        <Input placeholder="الوحدة (متر، كجم…)" value={unit} onChange={(e) => setUnit(e.target.value)} maxLength={20} />
+        <UnitPicker value={unit} onChange={setUnit} />
         <div className="flex gap-2">
           <Input placeholder="السعر" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} dir="ltr" />
           <Button onClick={() => void add()} disabled={saving}>
@@ -504,16 +523,80 @@ function AddProductForm({
   );
 }
 
+const OTHER_UNIT = "__other";
+
+function UnitPicker({
+  value,
+  onChange,
+  className,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  className?: string;
+}) {
+  const isPreset = (PRODUCT_UNITS as readonly string[]).includes(value);
+  const [custom, setCustom] = useState(!isPreset);
+  return (
+    <div className={`flex gap-2 ${className ?? ""}`}>
+      <Select
+        value={custom ? OTHER_UNIT : value}
+        onValueChange={(v) => {
+          if (v === OTHER_UNIT) {
+            setCustom(true);
+            onChange("");
+          } else {
+            setCustom(false);
+            onChange(v);
+          }
+        }}
+      >
+        <SelectTrigger aria-label="الوحدة" className="min-w-28">
+          <SelectValue placeholder="الوحدة" />
+        </SelectTrigger>
+        <SelectContent>
+          {PRODUCT_UNITS.map((u) => (
+            <SelectItem key={u} value={u}>
+              {u}
+            </SelectItem>
+          ))}
+          <SelectItem value={OTHER_UNIT}>وحدة تانية…</SelectItem>
+        </SelectContent>
+      </Select>
+      {custom && (
+        <Input
+          aria-label="اكتب الوحدة"
+          placeholder="اكتب الوحدة"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          maxLength={20}
+        />
+      )}
+    </div>
+  );
+}
+
 function ProductRow({
   product,
   categoryName,
+  categories,
 }: {
   product: AdminProduct;
   categoryName: string;
+  categories: AdminCategory[];
 }) {
   const queryClient = useQueryClient();
   const [price, setPrice] = useState(String(product.price));
   const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(product.name_ar);
+  const [specs, setSpecs] = useState(product.specs_ar ?? "");
+  const [unit, setUnit] = useState(product.unit_ar);
+  const [categoryId, setCategoryId] = useState(product.category_id);
+
+  async function refresh() {
+    await queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+    await queryClient.invalidateQueries({ queryKey: ["catalog"] });
+  }
 
   async function update(fields: Partial<AdminProduct>) {
     setSaving(true);
@@ -524,11 +607,44 @@ function ProductRow({
         .eq("id", product.id);
       if (error) {
         toast.error("تعذر تحديث المنتج");
-        return;
+        return false;
       }
       toast.success("تم التحديث");
-      await queryClient.invalidateQueries({ queryKey: ["admin-products"] });
-      await queryClient.invalidateQueries({ queryKey: ["catalog"] });
+      await refresh();
+      return true;
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveDetails() {
+    if (name.trim().length < 2) {
+      toast.error("اسم المنتج قصير جدًا");
+      return;
+    }
+    if (unit.trim().length === 0) {
+      toast.error("اختار الوحدة أو اكتبها");
+      return;
+    }
+    const ok = await update({
+      name_ar: name.trim(),
+      specs_ar: specs.trim() || null,
+      unit_ar: normalizeUnit(unit),
+      category_id: categoryId,
+    });
+    if (ok) setEditing(false);
+  }
+
+  async function remove() {
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("products").delete().eq("id", product.id);
+      if (error) {
+        toast.error("تعذر حذف الصنف");
+        return;
+      }
+      toast.success("تم حذف الصنف");
+      await refresh();
     } finally {
       setSaving(false);
     }
@@ -621,7 +737,90 @@ function ProductRow({
             "مخفي"
           )}
         </Button>
+        <Button
+          size="sm"
+          variant={editing ? "secondary" : "outline"}
+          onClick={() => setEditing(!editing)}
+        >
+          <Pencil className="h-3 w-3" />
+          تعديل
+        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button size="sm" variant="destructive" disabled={saving}>
+              <Trash2 className="h-3 w-3" />
+              حذف
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent dir="rtl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>حذف "{product.name_ar}"؟</AlertDialogTitle>
+              <AlertDialogDescription>
+                الصنف هيتشال من المتجر نهائيًا. الفواتير القديمة اللي فيها الصنف ده هتفضل زي ما هي.
+                لو عايز تخفيه مؤقتًا بس، استخدم زرار "معروض/مخفي".
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel>إلغاء</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => void remove()}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                احذف الصنف
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
+      {editing && (
+        <CardContent className="grid gap-3 border-t pt-4 sm:grid-cols-2">
+          <div className="grid gap-1">
+            <Label>اسم الصنف</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
+          </div>
+          <div className="grid gap-1">
+            <Label>المواصفات</Label>
+            <Input value={specs} onChange={(e) => setSpecs(e.target.value)} maxLength={100} />
+          </div>
+          <div className="grid gap-1">
+            <Label>الوحدة (سم، لفة، كرتونة…)</Label>
+            <UnitPicker value={unit} onChange={setUnit} />
+          </div>
+          <div className="grid gap-1">
+            <Label>القسم</Label>
+            <Select value={categoryId} onValueChange={setCategoryId}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name_ar}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2 sm:col-span-2">
+            <Button onClick={() => void saveDetails()} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              حفظ التعديل
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setName(product.name_ar);
+                setSpecs(product.specs_ar ?? "");
+                setUnit(product.unit_ar);
+                setCategoryId(product.category_id);
+                setEditing(false);
+              }}
+            >
+              إلغاء
+            </Button>
+          </div>
+        </CardContent>
+      )}
     </Card>
   );
 }
