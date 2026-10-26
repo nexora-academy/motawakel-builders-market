@@ -10,6 +10,14 @@ export type Category = {
   sort_order: number;
 };
 
+export type ProductVariant = {
+  id: string;
+  product_id: string;
+  label_ar: string;
+  price: number;
+  in_stock: boolean;
+};
+
 export type Product = {
   id: string;
   category_id: string;
@@ -19,6 +27,8 @@ export type Product = {
   price: number;
   in_stock: boolean;
   image_url: string | null;
+  /** المقاسات — لو فيه مقاسات، كل مقاس بسعره والعميل لازم يختار واحد */
+  variants: ProductVariant[];
 };
 
 export type Catalog = {
@@ -31,8 +41,27 @@ const PRODUCT_COLUMNS =
 
 type PublicClient = ReturnType<typeof makePublicClient>;
 
+type ProductRow = Omit<Product, "variants">;
+
+async function attachVariants(supabase: PublicClient, products: ProductRow[]): Promise<Product[]> {
+  if (products.length === 0) return [];
+  const { data } = await supabase
+    .from("product_variants")
+    .select("id, product_id, label_ar, price, in_stock")
+    .in("product_id", products.map((p) => p.id))
+    .order("sort_order")
+    .order("created_at");
+  const byProduct = new Map<string, ProductVariant[]>();
+  for (const v of data ?? []) {
+    const list = byProduct.get(v.product_id) ?? [];
+    list.push({ ...v, price: Number(v.price) });
+    byProduct.set(v.product_id, list);
+  }
+  return products.map((p) => ({ ...p, variants: byProduct.get(p.id) ?? [] }));
+}
+
 // الصور المرفوعة من لوحة التحكم محفوظة في مخزن خاص — نحولها لروابط موقعة
-async function resolveImages(supabase: PublicClient, products: Product[]) {
+async function resolveImages<T extends ProductRow>(supabase: PublicClient, products: T[]): Promise<T[]> {
   const paths = products
     .map((p) => p.image_url)
     .filter((u): u is string => !!u && u.startsWith(STORAGE_IMAGE_PREFIX))
@@ -69,10 +98,10 @@ export const getCatalog = createServerFn({ method: "GET" }).handler(
     const products = (prods.data ?? []).map((p) => ({
       ...p,
       price: Number(p.price),
-    })) as Product[];
+    })) as ProductRow[];
     return {
       categories: (cats.data ?? []) as Category[],
-      products: await resolveImages(supabase, products),
+      products: await attachVariants(supabase, await resolveImages(supabase, products)),
     };
   },
 );
@@ -88,10 +117,11 @@ export const getProduct = createServerFn({ method: "GET" })
       .eq("is_active", true)
       .maybeSingle();
     if (!row) return null;
-    const [resolved] = await resolveImages(supabase, [
-      { ...(row as Product), price: Number(row.price) },
+    const resolved = await resolveImages(supabase, [
+      { ...(row as ProductRow), price: Number(row.price) },
     ]);
-    return resolved ?? null;
+    const [withVariants] = await attachVariants(supabase, resolved);
+    return withVariants ?? null;
   });
 
 export const getSettings = createServerFn({ method: "GET" }).handler(
