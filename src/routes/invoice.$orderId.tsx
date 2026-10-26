@@ -248,7 +248,7 @@ function InvoicePage() {
       lineTotal: it.quantity * it.unit_price,
     })),
     subtotal: totals.subtotal,
-    vat: totals.vat,
+    vatAmount: totals.vat,
     total: order.total,
     invoiceUrl: `${window.location.origin}/invoice/${order.id}${code ? `?code=${code}` : ""}`,
   });

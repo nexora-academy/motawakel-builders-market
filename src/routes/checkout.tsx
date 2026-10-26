@@ -158,7 +158,7 @@ function CheckoutPage() {
           lineTotal: it.qty * it.price,
         })),
         subtotal: noticeTotals.subtotal,
-        vat: noticeTotals.vat,
+        vatAmount: noticeTotals.vat,
         total: result.total,
         invoiceUrl,
       });

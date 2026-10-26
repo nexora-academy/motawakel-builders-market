@@ -64,7 +64,9 @@ describe("order notice to sales on WhatsApp", () => {
       name: "أحمد",
       phone: "0551234567",
       items: [{ name: "هوردي", specs: "ضغط 8", qty: 10, unit: "متر", lineTotal: 7.5 }],
-      total: 7.5,
+      subtotal: 7.5,
+      vatAmount: 1.13,
+      total: 8.63,
       invoiceUrl: "https://example.com/invoice/1",
     });
     expect(msg).toContain("شركة البناء الحديث");

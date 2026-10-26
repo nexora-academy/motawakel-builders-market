@@ -63,7 +63,7 @@ export type OrderNotice = {
   /** الإجمالي قبل الضريبة */
   subtotal: number;
   /** قيمة ضريبة القيمة المضافة */
-  vat: number;
+  vatAmount: number;
   /** الإجمالي شامل الضريبة */
   total: number;
   invoiceUrl: string;
@@ -84,7 +84,7 @@ export function orderNoticeMessage(o: OrderNotice): string {
     ),
     "",
     `الإجمالي قبل الضريبة: ${formatSAR(o.subtotal)}`,
-    `ضريبة القيمة المضافة 15%: ${formatSAR(o.vat)}`,
+    `ضريبة القيمة المضافة 15%: ${formatSAR(o.vatAmount)}`,
     `الإجمالي شامل الضريبة: ${formatSAR(o.total)}`,
     `الفاتورة: ${o.invoiceUrl}`,
   ]
