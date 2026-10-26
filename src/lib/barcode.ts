@@ -23,7 +23,7 @@ export function code39Bars(text: string, narrow = 2, wide = 5) {
   const bars: Bar[] = [];
   let x = 0;
   chars.forEach((ch, ci) => {
-    const pattern = CODE39[ch];
+    const pattern = CODE39[ch] ?? "";
     for (let i = 0; i < pattern.length; i++) {
       const w = pattern[i] === "w" ? wide : narrow;
       if (i % 2 === 0) bars.push({ x, width: w });

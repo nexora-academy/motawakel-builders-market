@@ -75,7 +75,7 @@ export function ProductCard({
 
         {variants.length > 0 && (
           <div className="mt-3">
-            <Select value={variantId ?? undefined} onValueChange={setVariantId}>
+            <Select value={variantId ?? ""} onValueChange={setVariantId}>
               <SelectTrigger aria-label="المقاس" className="h-9">
                 <SelectValue placeholder="اختار المقاس" />
               </SelectTrigger>
