@@ -13,6 +13,8 @@ import {
   orderNoticeMessage,
   whatsappLink,
 } from "@/lib/format";
+import { vatBreakdown } from "@/lib/vat";
+import { VatSummary } from "@/components/vat-summary";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -140,6 +142,7 @@ function CheckoutPage() {
         }
       }
       const invoiceUrl = `${window.location.origin}/invoice/${result.orderId}?code=${result.accessCode}`;
+      const noticeTotals = vatBreakdown(snapshot.reduce((s, it) => s + it.qty * it.price, 0));
       const message = orderNoticeMessage({
         orderNumber: result.orderNumber,
         company: parsed.data.company,
@@ -154,6 +157,8 @@ function CheckoutPage() {
           unit: it.unit,
           lineTotal: it.qty * it.price,
         })),
+        subtotal: noticeTotals.subtotal,
+        vat: noticeTotals.vat,
         total: result.total,
         invoiceUrl,
       });
@@ -311,10 +316,7 @@ function CheckoutPage() {
                 <span className="shrink-0 font-bold">{formatSAR(it.price * it.qty)}</span>
               </div>
             ))}
-            <div className="flex justify-between py-3 font-display text-base font-bold">
-              <span>الإجمالي التقريبي</span>
-              <span>{formatSAR(total)}</span>
-            </div>
+            <VatSummary subtotal={total} approximate />
             <p className="pb-1 text-xs text-muted-foreground">
               بعد التأكيد بتتفتح واتساب برسالة الطلب للمسؤول، وهو يراجع ويصدر الفاتورة
               النهائية، وبعدها تدفع إلكترونيًا.
