@@ -36,6 +36,13 @@
       "when": 1792933571929,
       "tag": "0004_order_vat_and_admin_delete",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793014669275,
+      "tag": "0005_product_variants",
+      "breakpoints": true
     }
   ]
 }
