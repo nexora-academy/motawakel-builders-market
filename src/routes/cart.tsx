@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, MessageCircle, ShoppingCart, Trash2 } from "lucide-react";
 import { settingsQueryOptions } from "@/lib/queries";
-import { useCart } from "@/lib/cart";
+import { cartLineKey, useCart } from "@/lib/cart";
 import { DEFAULT_SALES_WHATSAPP, formatSAR, whatsappLink } from "@/lib/format";
 import { vatBreakdown } from "@/lib/vat";
 import { VatSummary } from "@/components/vat-summary";
@@ -88,7 +88,7 @@ function CartPage() {
         </CardHeader>
         <CardContent className="divide-y">
           {items.map((it) => (
-            <div key={it.productId} className="flex items-center gap-3 py-4">
+            <div key={cartLineKey(it)} className="flex items-center gap-3 py-4">
               <div className="min-w-0 flex-1">
                 <p className="font-display font-bold">{it.name}</p>
                 {it.specs && (
@@ -103,7 +103,7 @@ function CartPage() {
                   type="button"
                   aria-label="زيادة"
                   className="flex h-9 w-9 items-center justify-center hover:bg-muted"
-                  onClick={() => setQty(it.productId, it.qty + 1)}
+                  onClick={() => setQty(cartLineKey(it), it.qty + 1)}
                 >
                   +
                 </button>
@@ -114,14 +114,14 @@ function CartPage() {
                   value={it.qty}
                   onChange={(e) => {
                     const v = Number(e.target.value.replace(/[^\d.]/g, ""));
-                    setQty(it.productId, Number.isFinite(v) ? v : 0);
+                    setQty(cartLineKey(it), Number.isFinite(v) ? v : 0);
                   }}
                 />
                 <button
                   type="button"
                   aria-label="إنقاص"
                   className="flex h-9 w-9 items-center justify-center hover:bg-muted"
-                  onClick={() => setQty(it.productId, it.qty - 1)}
+                  onClick={() => setQty(cartLineKey(it), it.qty - 1)}
                 >
                   −
                 </button>
@@ -133,7 +133,7 @@ function CartPage() {
                 variant="ghost"
                 size="icon"
                 aria-label="حذف"
-                onClick={() => remove(it.productId)}
+                onClick={() => remove(cartLineKey(it))}
               >
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>

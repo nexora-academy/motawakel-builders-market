@@ -40,7 +40,11 @@ export const createOrder = createServerFn({ method: "POST" })
   .handler(async ({ data }: { data: CreateOrderInput }) => {
     const supabase = makePublicClient();
     const { data: result, error } = await supabase.rpc("create_order", {
-      _items: data.items.map((it) => ({ productId: it.productId, qty: it.qty })),
+      _items: data.items.map((it) => ({
+        productId: it.productId,
+        variantId: it.variantId ?? null,
+        qty: it.qty,
+      })),
       _name: data.name,
       _phone: data.phone,
       _address: data.address || null,

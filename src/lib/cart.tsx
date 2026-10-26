@@ -10,6 +10,8 @@ import {
 
 export type CartItem = {
   productId: string;
+  /** المقاس المختار لو الصنف له مقاسات */
+  variantId?: string | null;
   name: string;
   specs: string | null;
   unit: string;
@@ -19,14 +21,19 @@ export type CartItem = {
 
 const CART_KEY = "mutawakkil-cart-v1";
 
+/** مفتاح السطر في السلة: الصنف + المقاس (كل مقاس سطر لوحده) */
+export function cartLineKey(it: Pick<CartItem, "productId" | "variantId">): string {
+  return `${it.productId}:${it.variantId ?? ""}`;
+}
+
 type CartContextValue = {
   items: CartItem[];
   hydrated: boolean;
   count: number;
   total: number;
   add: (item: Omit<CartItem, "qty">, qty: number) => void;
-  setQty: (productId: string, qty: number) => void;
-  remove: (productId: string) => void;
+  setQty: (lineKey: string, qty: number) => void;
+  remove: (lineKey: string) => void;
   clear: () => void;
 };
 
@@ -67,10 +74,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const add = useCallback((item: Omit<CartItem, "qty">, qty: number) => {
     setItems((prev) => {
-      const existing = prev.find((it) => it.productId === item.productId);
+      const key = cartLineKey(item);
+      const existing = prev.find((it) => cartLineKey(it) === key);
       if (existing) {
         return prev.map((it) =>
-          it.productId === item.productId
+          cartLineKey(it) === key
             ? { ...it, qty: Math.min(it.qty + qty, 100000) }
             : it,
         );
@@ -79,18 +87,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const setQty = useCallback((productId: string, qty: number) => {
+  const setQty = useCallback((lineKey: string, qty: number) => {
     setItems((prev) =>
       qty <= 0
-        ? prev.filter((it) => it.productId !== productId)
+        ? prev.filter((it) => cartLineKey(it) !== lineKey)
         : prev.map((it) =>
-            it.productId === productId ? { ...it, qty: Math.min(qty, 100000) } : it,
+            cartLineKey(it) === lineKey ? { ...it, qty: Math.min(qty, 100000) } : it,
           ),
     );
   }, []);
 
-  const remove = useCallback((productId: string) => {
-    setItems((prev) => prev.filter((it) => it.productId !== productId));
+  const remove = useCallback((lineKey: string) => {
+    setItems((prev) => prev.filter((it) => cartLineKey(it) !== lineKey));
   }, []);
 
   const clear = useCallback(() => setItems([]), []);

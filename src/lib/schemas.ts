@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const cartItemSchema = z.object({
   productId: z.string().uuid(),
+  variantId: z.string().uuid().nullable().optional(),
   qty: z.number().positive().max(100000),
 });
 
