@@ -25,6 +25,8 @@ export type CustomerOrder = {
   customer_address: string | null;
   notes: string | null;
   total: number;
+  /** نسبة ضريبة القيمة المضافة وقت الطلب (0.15) */
+  vat_rate: number;
   created_at: string;
   payment_id: string | null;
   company_name: string | null;
@@ -87,6 +89,7 @@ export const getOrderWithCode = createServerFn({ method: "POST" })
       unit_price: Number(it.unit_price),
     }));
     parsed.total = Number(parsed.total);
+    parsed.vat_rate = Number(parsed.vat_rate ?? 0.15);
     return parsed;
   });
 
