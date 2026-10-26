@@ -9,6 +9,14 @@ import type { Product } from "@/lib/store.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tilt } from "@/components/tilt";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { defaultVariant, variantSpecs } from "@/lib/variants";
 
 export function ProductCard({
   product,
@@ -23,6 +31,13 @@ export function ProductCard({
 }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
+  const variants = product.variants ?? [];
+  const [variantId, setVariantId] = useState<string | null>(
+    () => defaultVariant(variants)?.id ?? null,
+  );
+  const variant = variants.find((v) => v.id === variantId) ?? null;
+  const price = variant ? variant.price : product.price;
+  const available = product.in_stock && (variant ? variant.in_stock : true);
 
   return (
     <Tilt max={6} className="flex flex-col overflow-hidden rounded-2xl border bg-card">
@@ -58,9 +73,27 @@ export function ProductCard({
           <p className="mt-0.5 text-sm text-muted-foreground">{subtitle ?? product.specs_ar}</p>
         )}
 
+        {variants.length > 0 && (
+          <div className="mt-3">
+            <Select value={variantId ?? undefined} onValueChange={setVariantId}>
+              <SelectTrigger aria-label="المقاس" className="h-9">
+                <SelectValue placeholder="اختار المقاس" />
+              </SelectTrigger>
+              <SelectContent>
+                {variants.map((v) => (
+                  <SelectItem key={v.id} value={v.id} disabled={!v.in_stock}>
+                    مقاس {v.label_ar} — {formatSAR(v.price)}
+                    {!v.in_stock ? " (غير متوفر)" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         <div className="mt-3 flex items-baseline gap-2">
           <span className="font-display text-2xl font-extrabold text-foreground">
-            {formatSAR(product.price)}
+            {formatSAR(price)}
           </span>
           <span className="text-xs text-muted-foreground">/ {product.unit_ar} · قبل الضريبة</span>
         </div>
@@ -96,19 +129,22 @@ export function ProductCard({
           </div>
           <Button
             className="flex-1"
-            disabled={!product.in_stock || qty <= 0}
+            disabled={!available || qty <= 0 || (variants.length > 0 && !variant)}
             onClick={() => {
               add(
                 {
                   productId: product.id,
+                  variantId: variant?.id ?? null,
                   name: product.name_ar,
-                  specs: product.specs_ar,
+                  specs: variant ? variantSpecs(variant.label_ar, product.specs_ar) : product.specs_ar,
                   unit: product.unit_ar,
-                  price: Number(product.price),
+                  price: Number(price),
                 },
                 qty,
               );
-              toast.success(`تمت إضافة ${product.name_ar} للسلة`);
+              toast.success(
+                `تمت إضافة ${product.name_ar}${variant ? ` مقاس ${variant.label_ar}` : ""} للسلة`,
+              );
             }}
           >
             <ShoppingCart className="h-4 w-4" />
