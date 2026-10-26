@@ -225,6 +225,16 @@ function OrdersTab() {
     await queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
   }
 
+  async function deleteOrder(orderId: string) {
+    const { error } = await supabase.rpc("admin_delete_order", { _order_id: orderId });
+    if (error) {
+      toast.error("تعذر حذف الفاتورة");
+      return;
+    }
+    toast.success("تم حذف الفاتورة");
+    await queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+  }
+
   const orders = ordersQuery.data ?? [];
 
   return (
@@ -236,7 +246,7 @@ function OrdersTab() {
         <p className="py-8 text-center text-muted-foreground">مفيش طلبات لسه</p>
       )}
       {orders.map((o) => (
-        <OrderCard key={o.id} order={o} onStatusChange={changeStatus} />
+        <OrderCard key={o.id} order={o} onStatusChange={changeStatus} onDelete={deleteOrder} />
       ))}
     </div>
   );
@@ -245,9 +255,11 @@ function OrdersTab() {
 function OrderCard({
   order,
   onStatusChange,
+  onDelete,
 }: {
   order: AdminOrder;
   onStatusChange: (orderId: string, status: string) => Promise<void>;
+  onDelete: (orderId: string) => Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -269,7 +281,10 @@ function OrderCard({
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-display font-bold">{formatSAR(order.total)}</span>
+            <span className="font-display font-bold">
+              {formatSAR(order.total)}
+              <span className="ms-1 text-xs font-normal text-muted-foreground">شامل الضريبة</span>
+            </span>
             <Select value={order.status} onValueChange={(v) => void onStatusChange(order.id, v)}>
               <SelectTrigger className="w-44">
                 <SelectValue />
@@ -292,6 +307,32 @@ function OrderCard({
                 الفاتورة
               </Link>
             </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" aria-label="حذف الفاتورة">
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                  حذف
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>حذف الفاتورة {order.order_number}؟</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    الطلب والفاتورة بكل أغراضها هيتشالوا نهائيًا، ورابط الفاتورة اللي مع العميل
+                    مش هيفتح تاني. الخطوة دي ما ينفعش ترجع فيها.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => void onDelete(order.id)}
+                  >
+                    حذف نهائي
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </CardHeader>
