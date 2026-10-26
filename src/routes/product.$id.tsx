@@ -102,7 +102,7 @@ function ProductPage() {
             <span className="text-sm text-muted-foreground">/ {product.unit_ar}</span>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
-            السعر بيتأكد عند إصدار الفاتورة.
+            السعر قبل ضريبة القيمة المضافة 15% — الضريبة بتتضاف في الفاتورة، والسعر بيتأكد عند إصدارها.
           </p>
           <div className="mt-6">
             <ProductCard product={product} categorySlug={category?.slug} />

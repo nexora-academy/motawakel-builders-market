@@ -62,7 +62,7 @@ export function ProductCard({
           <span className="font-display text-2xl font-extrabold text-foreground">
             {formatSAR(product.price)}
           </span>
-          <span className="text-xs text-muted-foreground">/ {product.unit_ar}</span>
+          <span className="text-xs text-muted-foreground">/ {product.unit_ar} · قبل الضريبة</span>
         </div>
 
         <div className="mt-auto flex items-center gap-2 pt-4">
