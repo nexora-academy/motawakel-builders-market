@@ -22,6 +22,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LogoMark } from "@/components/brand-logo";
+import { Barcode } from "@/components/barcode";
+import { VAT_RATE, vatBreakdown, vatPercentLabel } from "@/lib/vat";
 import { toast } from "sonner";
 
 const invoiceSearchSchema = z.object({
@@ -59,6 +61,7 @@ type OrderRow = {
   customer_address: string | null;
   notes: string | null;
   total: number;
+  vat_rate: number;
   created_at: string;
   payment_id: string | null;
   company_name: string | null;
@@ -84,6 +87,7 @@ function mapRow(row: OrderRow): CustomerOrder {
     customer_address: row.customer_address,
     notes: row.notes,
     total: Number(row.total),
+    vat_rate: Number(row.vat_rate ?? VAT_RATE),
     created_at: row.created_at,
     payment_id: row.payment_id,
     company_name: row.company_name,
@@ -120,7 +124,7 @@ function InvoicePage() {
         const res = await supabase
           .from("orders")
           .select(
-            "id, order_number, status, customer_name, customer_phone, customer_address, notes, total, created_at, payment_id, company_name, vat_number, national_address, order_items(id, product_name_ar, specs_ar, unit_ar, quantity, unit_price)",
+            "id, order_number, status, customer_name, customer_phone, customer_address, notes, total, vat_rate, created_at, payment_id, company_name, vat_number, national_address, order_items(id, product_name_ar, specs_ar, unit_ar, quantity, unit_price)",
           )
           .eq("id", orderId)
           .maybeSingle();
@@ -225,6 +229,10 @@ function InvoicePage() {
       order.status === "awaiting_payment");
 
   const salesWa = settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP;
+  const totals = vatBreakdown(
+    order.items.reduce((s, it) => s + it.quantity * it.unit_price, 0),
+    order.vat_rate,
+  );
   const waMessage = orderNoticeMessage({
     orderNumber: order.order_number,
     company: order.company_name ?? order.customer_name,
@@ -239,6 +247,8 @@ function InvoicePage() {
       unit: it.unit_ar,
       lineTotal: it.quantity * it.unit_price,
     })),
+    subtotal: totals.subtotal,
+    vatAmount: totals.vat,
     total: order.total,
     invoiceUrl: `${window.location.origin}/invoice/${order.id}${code ? `?code=${code}` : ""}`,
   });
@@ -335,6 +345,7 @@ function InvoicePage() {
               <span className="text-muted-foreground">الحالة: </span>
               {ORDER_STATUS_LABELS[order.status] ?? order.status}
             </p>
+            <Barcode value={order.order_number} className="mt-3 w-[200px]" />
           </div>
         </div>
 
@@ -401,10 +412,22 @@ function InvoicePage() {
           </tbody>
           <tfoot>
             <tr className="border-t">
-              <td colSpan={3} className="pt-4 font-display text-lg font-bold">
-                الإجمالي
+              <td colSpan={3} className="pt-4 text-muted-foreground">
+                الإجمالي قبل الضريبة
               </td>
-              <td className="pt-4 text-left font-display text-xl font-bold">
+              <td className="pt-4 text-left font-bold">{formatSAR(totals.subtotal)}</td>
+            </tr>
+            <tr>
+              <td colSpan={3} className="pt-2 text-muted-foreground">
+                ضريبة القيمة المضافة ({vatPercentLabel(totals.rate)})
+              </td>
+              <td className="pt-2 text-left font-bold">{formatSAR(totals.vat)}</td>
+            </tr>
+            <tr>
+              <td colSpan={3} className="pt-3 font-display text-lg font-bold">
+                الإجمالي شامل الضريبة
+              </td>
+              <td className="pt-3 text-left font-display text-xl font-bold">
                 {formatSAR(order.total)}
               </td>
             </tr>

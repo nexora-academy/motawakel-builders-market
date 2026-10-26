@@ -38,6 +38,8 @@ import {
   ImagePlus,
   Pencil,
   Trash2,
+  Plus,
+  Ruler,
 } from "lucide-react";
 import { PRODUCT_IMAGE_BUCKET, STORAGE_IMAGE_PREFIX, productImage } from "@/lib/product-images";
 import { PRODUCT_UNITS, normalizeUnit } from "@/lib/units";
@@ -225,6 +227,16 @@ function OrdersTab() {
     await queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
   }
 
+  async function deleteOrder(orderId: string) {
+    const { error } = await supabase.rpc("admin_delete_order", { _order_id: orderId });
+    if (error) {
+      toast.error("تعذر حذف الفاتورة");
+      return;
+    }
+    toast.success("تم حذف الفاتورة");
+    await queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+  }
+
   const orders = ordersQuery.data ?? [];
 
   return (
@@ -236,7 +248,7 @@ function OrdersTab() {
         <p className="py-8 text-center text-muted-foreground">مفيش طلبات لسه</p>
       )}
       {orders.map((o) => (
-        <OrderCard key={o.id} order={o} onStatusChange={changeStatus} />
+        <OrderCard key={o.id} order={o} onStatusChange={changeStatus} onDelete={deleteOrder} />
       ))}
     </div>
   );
@@ -245,9 +257,11 @@ function OrdersTab() {
 function OrderCard({
   order,
   onStatusChange,
+  onDelete,
 }: {
   order: AdminOrder;
   onStatusChange: (orderId: string, status: string) => Promise<void>;
+  onDelete: (orderId: string) => Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -269,7 +283,10 @@ function OrderCard({
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-display font-bold">{formatSAR(order.total)}</span>
+            <span className="font-display font-bold">
+              {formatSAR(order.total)}
+              <span className="ms-1 text-xs font-normal text-muted-foreground">شامل الضريبة</span>
+            </span>
             <Select value={order.status} onValueChange={(v) => void onStatusChange(order.id, v)}>
               <SelectTrigger className="w-44">
                 <SelectValue />
@@ -292,6 +309,32 @@ function OrderCard({
                 الفاتورة
               </Link>
             </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" aria-label="حذف الفاتورة">
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                  حذف
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>حذف الفاتورة {order.order_number}؟</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    الطلب والفاتورة بكل أغراضها هيتشالوا نهائيًا، ورابط الفاتورة اللي مع العميل
+                    مش هيفتح تاني. الخطوة دي ما ينفعش ترجع فيها.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => void onDelete(order.id)}
+                  >
+                    حذف نهائي
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </CardHeader>
@@ -588,6 +631,7 @@ function ProductRow({
   const [price, setPrice] = useState(String(product.price));
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [showSizes, setShowSizes] = useState(false);
   const [name, setName] = useState(product.name_ar);
   const [specs, setSpecs] = useState(product.specs_ar ?? "");
   const [unit, setUnit] = useState(product.unit_ar);
@@ -745,6 +789,14 @@ function ProductRow({
           <Pencil className="h-3 w-3" />
           تعديل
         </Button>
+        <Button
+          size="sm"
+          variant={showSizes ? "secondary" : "outline"}
+          onClick={() => setShowSizes(!showSizes)}
+        >
+          <Ruler className="h-3 w-3" />
+          المقاسات
+        </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button size="sm" variant="destructive" disabled={saving}>
@@ -821,7 +873,197 @@ function ProductRow({
           </div>
         </CardContent>
       )}
+      {showSizes && <VariantsEditor productId={product.id} unit={product.unit_ar} />}
     </Card>
+  );
+}
+
+type AdminVariant = {
+  id: string;
+  label_ar: string;
+  price: number;
+  in_stock: boolean;
+  sort_order: number;
+};
+
+function VariantsEditor({ productId, unit }: { productId: string; unit: string }) {
+  const queryClient = useQueryClient();
+  const key = ["admin-variants", productId];
+  const variantsQuery = useQuery({
+    queryKey: key,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_variants")
+        .select("id, label_ar, price, in_stock, sort_order")
+        .eq("product_id", productId)
+        .order("sort_order")
+        .order("created_at");
+      if (error) throw error;
+      return (data ?? []).map((v) => ({ ...v, price: Number(v.price) })) as AdminVariant[];
+    },
+  });
+  const [label, setLabel] = useState("");
+  const [price, setPrice] = useState("");
+  const [saving, setSaving] = useState(false);
+  const variants = variantsQuery.data ?? [];
+
+  async function refresh() {
+    await queryClient.invalidateQueries({ queryKey: key });
+    await queryClient.invalidateQueries({ queryKey: ["catalog"] });
+    await queryClient.invalidateQueries({ queryKey: ["product", productId] });
+  }
+
+  async function add() {
+    const p = Number(price.replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))));
+    if (label.trim().length === 0 || !Number.isFinite(p) || p <= 0) {
+      toast.error("اكتب المقاس والسعر");
+      return;
+    }
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("product_variants").insert({
+        product_id: productId,
+        label_ar: label.trim(),
+        price: p,
+        sort_order: variants.length,
+      });
+      if (error) {
+        toast.error("تعذر إضافة المقاس");
+        return;
+      }
+      toast.success("تمت إضافة المقاس");
+      setLabel("");
+      setPrice("");
+      await refresh();
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <CardContent className="space-y-3 border-t pt-4">
+      <div>
+        <p className="font-display font-bold">المقاسات والأسعار</p>
+        <p className="text-xs text-muted-foreground">
+          لو الصنف له أكتر من مقاس، ضيف كل مقاس بسعره (قبل الضريبة، لكل {unit}). العميل هيختار
+          المقاس قبل ما يضيف للسلة. لو مفيش مقاسات بيتباع بالسعر الأساسي.
+        </p>
+      </div>
+      {variantsQuery.isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>}
+      {variants.length > 0 && (
+        <div className="divide-y rounded-lg border">
+          {variants.map((v) => (
+            <VariantRow key={`${v.id}-${v.price}-${v.label_ar}-${v.in_stock}`} variant={v} onChanged={refresh} />
+          ))}
+        </div>
+      )}
+      <div className="flex flex-wrap gap-2">
+        <Input
+          aria-label="المقاس الجديد"
+          placeholder='المقاس (مثلًا 3 إنش أو 2 مم)'
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          maxLength={60}
+          className="w-56"
+        />
+        <Input
+          aria-label="سعر المقاس"
+          placeholder="السعر"
+          inputMode="decimal"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          className="w-28"
+          dir="ltr"
+        />
+        <Button onClick={() => void add()} disabled={saving}>
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+          إضافة مقاس
+        </Button>
+      </div>
+    </CardContent>
+  );
+}
+
+function VariantRow({ variant, onChanged }: { variant: AdminVariant; onChanged: () => Promise<void> }) {
+  const [label, setLabel] = useState(variant.label_ar);
+  const [price, setPrice] = useState(String(variant.price));
+  const [saving, setSaving] = useState(false);
+
+  async function update(fields: Partial<AdminVariant>) {
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("product_variants").update(fields).eq("id", variant.id);
+      if (error) {
+        toast.error("تعذر تحديث المقاس");
+        return;
+      }
+      toast.success("تم التحديث");
+      await onChanged();
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function remove() {
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("product_variants").delete().eq("id", variant.id);
+      if (error) {
+        toast.error("تعذر حذف المقاس");
+        return;
+      }
+      toast.success("تم حذف المقاس");
+      await onChanged();
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 p-2 text-sm">
+      <Input
+        aria-label="المقاس"
+        value={label}
+        onChange={(e) => setLabel(e.target.value)}
+        maxLength={60}
+        className="h-8 w-48"
+      />
+      <Input
+        aria-label="السعر"
+        inputMode="decimal"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+        className="h-8 w-24"
+        dir="ltr"
+      />
+      <Button
+        size="sm"
+        variant="outline"
+        disabled={saving}
+        onClick={() => {
+          const p = Number(price);
+          if (label.trim().length === 0 || !Number.isFinite(p) || p <= 0) {
+            toast.error("اكتب المقاس والسعر");
+            return;
+          }
+          void update({ label_ar: label.trim(), price: p });
+        }}
+      >
+        <Save className="h-3 w-3" />
+        حفظ
+      </Button>
+      <Button
+        size="sm"
+        variant="outline"
+        disabled={saving}
+        onClick={() => void update({ in_stock: !variant.in_stock })}
+      >
+        {variant.in_stock ? "متوفر" : "غير متوفر"}
+      </Button>
+      <Button size="sm" variant="ghost" disabled={saving} onClick={() => void remove()} aria-label="حذف المقاس">
+        <Trash2 className="h-3 w-3 text-destructive" />
+      </Button>
+    </div>
   );
 }
 

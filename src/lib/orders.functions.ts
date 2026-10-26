@@ -25,6 +25,8 @@ export type CustomerOrder = {
   customer_address: string | null;
   notes: string | null;
   total: number;
+  /** نسبة ضريبة القيمة المضافة وقت الطلب (0.15) */
+  vat_rate: number;
   created_at: string;
   payment_id: string | null;
   company_name: string | null;
@@ -38,7 +40,11 @@ export const createOrder = createServerFn({ method: "POST" })
   .handler(async ({ data }: { data: CreateOrderInput }) => {
     const supabase = makePublicClient();
     const { data: result, error } = await supabase.rpc("create_order", {
-      _items: data.items.map((it) => ({ productId: it.productId, qty: it.qty })),
+      _items: data.items.map((it) => ({
+        productId: it.productId,
+        variantId: it.variantId ?? null,
+        qty: it.qty,
+      })),
       _name: data.name,
       _phone: data.phone,
       _address: data.address || null,
@@ -87,6 +93,7 @@ export const getOrderWithCode = createServerFn({ method: "POST" })
       unit_price: Number(it.unit_price),
     }));
     parsed.total = Number(parsed.total);
+    parsed.vat_rate = Number(parsed.vat_rate ?? 0.15);
     return parsed;
   });
 

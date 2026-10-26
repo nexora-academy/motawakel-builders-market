@@ -6,13 +6,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { createOrder, linkOrderToUser } from "@/lib/orders.functions";
 import { createOrderSchema } from "@/lib/schemas";
 import { settingsQueryOptions } from "@/lib/queries";
-import { useCart } from "@/lib/cart";
+import { cartLineKey, useCart } from "@/lib/cart";
 import {
   DEFAULT_SALES_WHATSAPP,
   formatSAR,
   orderNoticeMessage,
   whatsappLink,
 } from "@/lib/format";
+import { vatBreakdown } from "@/lib/vat";
+import { VatSummary } from "@/components/vat-summary";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -110,7 +112,11 @@ function CheckoutPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const parsed = createOrderSchema.safeParse({
-      items: items.map((it) => ({ productId: it.productId, qty: it.qty })),
+      items: items.map((it) => ({
+        productId: it.productId,
+        variantId: it.variantId ?? null,
+        qty: it.qty,
+      })),
       ...form,
     });
     if (!parsed.success) {
@@ -140,6 +146,7 @@ function CheckoutPage() {
         }
       }
       const invoiceUrl = `${window.location.origin}/invoice/${result.orderId}?code=${result.accessCode}`;
+      const noticeTotals = vatBreakdown(snapshot.reduce((s, it) => s + it.qty * it.price, 0));
       const message = orderNoticeMessage({
         orderNumber: result.orderNumber,
         company: parsed.data.company,
@@ -154,6 +161,8 @@ function CheckoutPage() {
           unit: it.unit,
           lineTotal: it.qty * it.price,
         })),
+        subtotal: noticeTotals.subtotal,
+        vatAmount: noticeTotals.vat,
         total: result.total,
         invoiceUrl,
       });
@@ -299,7 +308,7 @@ function CheckoutPage() {
           </CardHeader>
           <CardContent className="divide-y text-sm">
             {items.map((it) => (
-              <div key={it.productId} className="flex justify-between gap-2 py-2">
+              <div key={cartLineKey(it)} className="flex justify-between gap-2 py-2">
                 <span className="min-w-0 truncate">
                   {it.name}
                   {it.specs ? ` — ${it.specs}` : ""}
@@ -311,10 +320,7 @@ function CheckoutPage() {
                 <span className="shrink-0 font-bold">{formatSAR(it.price * it.qty)}</span>
               </div>
             ))}
-            <div className="flex justify-between py-3 font-display text-base font-bold">
-              <span>الإجمالي التقريبي</span>
-              <span>{formatSAR(total)}</span>
-            </div>
+            <VatSummary subtotal={total} approximate />
             <p className="pb-1 text-xs text-muted-foreground">
               بعد التأكيد بتتفتح واتساب برسالة الطلب للمسؤول، وهو يراجع ويصدر الفاتورة
               النهائية، وبعدها تدفع إلكترونيًا.

@@ -8,6 +8,7 @@ import { productImage } from "@/lib/product-images";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Tilt } from "@/components/tilt";
+import { startingPrice } from "@/lib/variants";
 
 function queryOptionsForProduct(id: string) {
   return queryOptions({
@@ -95,14 +96,35 @@ function ProductPage() {
           {product.specs_ar && (
             <p className="mt-2 text-lg text-muted-foreground">{product.specs_ar}</p>
           )}
+          {product.variants.length > 0 && (
+            <div className="mt-4 overflow-hidden rounded-xl border">
+              <p className="bg-secondary px-3 py-2 text-sm font-bold">المقاسات والأسعار</p>
+              <ul className="divide-y text-sm">
+                {product.variants.map((v) => (
+                  <li key={v.id} className="flex justify-between px-3 py-2">
+                    <span>
+                      مقاس {v.label_ar}
+                      {!v.in_stock && (
+                        <span className="text-muted-foreground"> (غير متوفر)</span>
+                      )}
+                    </span>
+                    <span className="font-bold">{formatSAR(v.price)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <div className="mt-4 flex items-baseline gap-2">
+            {product.variants.length > 0 && (
+              <span className="text-sm text-muted-foreground">يبدأ من</span>
+            )}
             <span className="font-display text-4xl font-extrabold">
-              {formatSAR(product.price)}
+              {formatSAR(startingPrice(product))}
             </span>
             <span className="text-sm text-muted-foreground">/ {product.unit_ar}</span>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
-            السعر بيتأكد عند إصدار الفاتورة.
+            السعر قبل ضريبة القيمة المضافة 15% — الضريبة بتتضاف في الفاتورة، والسعر بيتأكد عند إصدارها.
           </p>
           <div className="mt-6">
             <ProductCard product={product} categorySlug={category?.slug} />

@@ -64,7 +64,9 @@ describe("order notice to sales on WhatsApp", () => {
       name: "أحمد",
       phone: "0551234567",
       items: [{ name: "هوردي", specs: "ضغط 8", qty: 10, unit: "متر", lineTotal: 7.5 }],
-      total: 7.5,
+      subtotal: 7.5,
+      vatAmount: 1.13,
+      total: 8.63,
       invoiceUrl: "https://example.com/invoice/1",
     });
     expect(msg).toContain("شركة البناء الحديث");
@@ -84,5 +86,66 @@ describe("admin product units", () => {
   it("falls back to قطعة when the unit is left empty", () => {
     expect(normalizeUnit("  ")).toBe("قطعة");
     expect(normalizeUnit(" كرتونة ")).toBe("كرتونة");
+  });
+});
+
+describe("prices before VAT, invoice with 15% VAT", () => {
+  it("adds 15% VAT on top of the pre-tax subtotal", async () => {
+    const { vatBreakdown, VAT_RATE } = await import("@/lib/vat");
+    expect(VAT_RATE).toBe(0.15);
+    expect(vatBreakdown(200)).toMatchObject({ subtotal: 200, vat: 30, total: 230 });
+    expect(vatBreakdown(7.5)).toMatchObject({ vat: 1.13, total: 8.63 });
+  });
+
+  it("the WhatsApp order notice shows pre-tax, VAT and total with VAT", () => {
+    const msg = orderNoticeMessage({
+      orderNumber: "MTW-2026-00011",
+      company: "شركة",
+      nationalAddress: "الرياض",
+      name: "أحمد",
+      phone: "0551234567",
+      items: [],
+      subtotal: 200,
+      vatAmount: 30,
+      total: 230,
+      invoiceUrl: "https://example.com",
+    });
+    expect(msg).toContain("الإجمالي قبل الضريبة: 200.00");
+    expect(msg).toContain("ضريبة القيمة المضافة 15%: 30.00");
+    expect(msg).toContain("الإجمالي شامل الضريبة: 230.00");
+  });
+});
+
+describe("invoice barcode", () => {
+  it("every Code 39 character has exactly 3 wide elements", async () => {
+    const { CODE39_CHARS, code39Bars } = await import("@/lib/barcode");
+    for (const c of CODE39_CHARS) {
+      const { bars } = code39Bars(c === "*" ? "" : c);
+      expect(bars.length).toBeGreaterThan(0);
+    }
+    const a = code39Bars("MTW-2026-00001");
+    const b = code39Bars("MTW-2026-00002");
+    expect(a.text).toBe("MTW-2026-00001");
+    expect(a.bars).not.toEqual(b.bars);
+  });
+});
+
+describe("product sizes with their own price", () => {
+  it("each size of the same item is its own cart line", async () => {
+    const { cartLineKey } = await import("@/lib/cart");
+    expect(cartLineKey({ productId: "p", variantId: "a" })).not.toBe(
+      cartLineKey({ productId: "p", variantId: "b" }),
+    );
+  });
+
+  it("the cheapest size is the starting price and the size is written on the invoice line", async () => {
+    const { startingPrice, variantSpecs } = await import("@/lib/variants");
+    const variants = [
+      { id: "1", product_id: "p", label_ar: "3 إنش", price: 12, in_stock: true },
+      { id: "2", product_id: "p", label_ar: "2 إنش", price: 9, in_stock: true },
+    ];
+    expect(startingPrice({ price: 50, variants })).toBe(9);
+    expect(startingPrice({ price: 50, variants: [] })).toBe(50);
+    expect(variantSpecs("3 إنش", "مجلفن")).toBe("مقاس 3 إنش — مجلفن");
   });
 });
