@@ -4,6 +4,8 @@ import { ArrowRight, MessageCircle, ShoppingCart, Trash2 } from "lucide-react";
 import { settingsQueryOptions } from "@/lib/queries";
 import { useCart } from "@/lib/cart";
 import { DEFAULT_SALES_WHATSAPP, formatSAR, whatsappLink } from "@/lib/format";
+import { vatBreakdown } from "@/lib/vat";
+import { VatSummary } from "@/components/vat-summary";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,13 +38,16 @@ function CartPage() {
   const { items, total, hydrated, setQty, remove } = useCart();
   const { data: settings } = useQuery(settingsQueryOptions);
 
+  const totals = vatBreakdown(total);
   const quoteMessage = [
     "السلام عليكم، محتاج عرض سعر للأغراض دي من مؤسسة المتوكل:",
     ...items.map(
       (it) =>
         `• ${it.name}${it.specs ? ` (${it.specs})` : ""} — الكمية: ${it.qty} ${it.unit} — ${formatSAR(it.price * it.qty)}`,
     ),
-    `الإجمالي التقريبي: ${formatSAR(total)}`,
+    `الإجمالي قبل الضريبة: ${formatSAR(totals.subtotal)}`,
+    `ضريبة القيمة المضافة 15%: ${formatSAR(totals.vat)}`,
+    `الإجمالي التقريبي شامل الضريبة: ${formatSAR(totals.total)}`,
   ].join("\n");
 
   if (!hydrated) {
@@ -134,10 +139,7 @@ function CartPage() {
               </Button>
             </div>
           ))}
-          <div className="flex items-center justify-between py-4">
-            <span className="font-display text-lg font-bold">الإجمالي التقريبي</span>
-            <span className="font-display text-2xl font-bold">{formatSAR(total)}</span>
-          </div>
+          <VatSummary subtotal={total} approximate />
         </CardContent>
       </Card>
 
