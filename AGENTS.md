@@ -22,3 +22,4 @@
 - The sales WhatsApp number is never rendered as text on public pages; it is only used behind wa.me buttons (quote requests and the new-order notice built by orderNoticeMessage).
 - The home-page 3D hero (src/components/hero-scene.tsx, React Three Fiber) is lazy-loaded client-only behind a mount check so SSR never touches WebGL; logo geometry is shared from src/lib/logo-geometry.ts by the SVG logo, the 3D logo and the favicon.
 - Admins may hard-delete products: order_items.product_id is ON DELETE SET NULL and order lines keep their own name/specs/unit/price snapshot, so old invoices stay intact. Product units come from src/lib/units.ts (presets + free-text "other").
+- Theme switching lives in the shared header, applies the existing root dark tokens, and reads browser storage only after mount to keep SSR hydration stable.
