@@ -13,6 +13,7 @@ import { useCart } from "@/lib/cart";
 import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Sheet,
   SheetContent,
@@ -168,6 +169,7 @@ export function SiteHeader() {
           </Button>
         )}
 
+        <ThemeToggle />
         <Button asChild variant="outline" size="sm" className="relative">
           <Link to="/cart" aria-label="سلة المشتريات">
             <ShoppingCart className="h-5 w-5" />
