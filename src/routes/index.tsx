@@ -62,7 +62,7 @@ function Index() {
           className="absolute inset-0 -z-10 h-full w-full object-cover opacity-15 mix-blend-luminosity"
         />
         <div className="mx-auto grid max-w-7xl items-center gap-6 px-4 py-12 lg:grid-cols-2 lg:py-20">
-          <div>
+          <div className="min-w-0">
             <span className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-accent-foreground shadow-3d">
               <BadgeCheck className="h-4 w-4" />
               جودة تُبنى عليها
@@ -85,7 +85,7 @@ function Index() {
                 href={whatsappLink(salesWa, "السلام عليكم، محتاج عرض سعر من مؤسسة المتوكل")}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 font-bold text-accent-foreground shadow-3d transition-transform hover:-translate-y-0.5"
+                className="inline-flex max-w-full items-center gap-2 rounded-xl bg-accent px-6 py-3 font-bold text-accent-foreground shadow-3d transition-transform hover:-translate-y-0.5"
               >
                 <MessageCircle className="h-4 w-4" />
                 اطلب عرض سعر على واتساب
@@ -99,7 +99,7 @@ function Index() {
               </a>
             </div>
           </div>
-          <div className="h-[320px] sm:h-[420px] lg:h-[480px]">
+          <div className="h-[320px] min-w-0 sm:h-[420px] lg:h-[480px]">
             <Hero3D />
           </div>
         </div>
