@@ -5,8 +5,8 @@ import {
   BadgeCheck,
   Building2,
   MessageCircle,
+  MessagesSquare,
   Truck,
-  Wallet,
 } from "lucide-react";
 import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { CATEGORY_IMAGES } from "@/lib/product-images";
@@ -24,13 +24,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "اشترِ أدوات البناء الأساسية، رولات العزل، أدوات اللياسة، والهوردي بجميع الضغوط والمقاسات أونلاين مع فاتورة ودفع إلكتروني.",
+          "تصفح أدوات البناء الأساسية، رولات العزل، أدوات اللياسة، والهوردي بجميع الضغوط والمقاسات واطلب عرض سعر على واتساب.",
       },
       { property: "og:title", content: "مؤسسة المتوكل للتجارة | مواد بناء وعوازل" },
       {
         property: "og:description",
         content:
-          "أدوات البناء، رولات العزل، أدوات اللياسة، والهوردي بجميع الضغوط — اطلب أونلاين واستلم فاتورتك.",
+          "أدوات البناء، رولات العزل، أدوات اللياسة، والهوردي بجميع الضغوط — اختار طلبك وكلم المبيعات على واتساب.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -109,7 +109,7 @@ function Index() {
       <section id="categories" className="mx-auto max-w-7xl scroll-mt-28 px-4 py-16">
         <h2 className="font-display text-2xl font-bold sm:text-3xl">أقسامنا</h2>
         <p className="mt-1 text-muted-foreground">
-          اختر القسم وابدأ إضافة اللي محتاجه للسلة
+          اختر القسم والصنف والكمية، واطلب السعر من المبيعات على واتساب
         </p>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {catalog.categories.map((cat) => (
@@ -141,7 +141,7 @@ function Index() {
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { icon: Building2, title: "خبرة في مواد البناء", text: "تنوع يغطي احتياجات موقعك كاملة" },
-          { icon: Wallet, title: "دفع إلكتروني آمن", text: "ادفع بسهولة ببطاقتك البنكية" },
+          { icon: MessagesSquare, title: "رد مباشر من المبيعات", text: "اعرف السعر والتوفر على واتساب" },
           { icon: Truck, title: "فاتورة باسم شركتك", text: "بالرقم الضريبي والعنوان الوطني" },
           { icon: MessageCircle, title: "عرض سعر على واتساب", text: "ابعت طلبك ويوصل للمبيعات على طول" },
         ].map((f) => (
@@ -157,17 +157,17 @@ function Index() {
         ))}
       </section>
 
-      {/* خطوات الشراء */}
+      {/* خطوات الطلب */}
       <section className="mx-auto max-w-7xl px-4 pb-16">
         <h2 className="font-display text-2xl font-bold sm:text-3xl">
-          إزاي تشتري من الموقع؟
+          إزاي تطلب من الموقع؟
         </h2>
         <ol className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            "اختار الأغراض اللي محتاجها وحدد الكمية",
-            "أضفها للسلة واكتب بيانات شركتك",
-            "أكّد الطلب ويوصل للمسؤول على واتساب فورًا",
-            "استلم الفاتورة PDF وادفع إلكترونيًا",
+            "اختار القسم والأغراض اللي محتاجها",
+            "حدد المقاس والكمية المناسبة",
+            "اضغط زر واتساب وابعت الرسالة الجاهزة",
+            "مسؤول المبيعات يرد عليك بالسعر والتوفر",
           ].map((step, i) => (
             <li key={i}>
               <Tilt className="rounded-2xl border bg-card p-5">
