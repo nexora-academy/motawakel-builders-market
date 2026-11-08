@@ -76,7 +76,7 @@ function AboutPage() {
           <h1 className="font-display text-4xl font-extrabold">من نحن</h1>
           <p className="max-w-2xl text-lg opacity-90">
             مؤسسة المتوكل للتجارة متخصصة في تجارة مواد البناء والعوازل. بنوفر للمقاولين
-            وأصحاب المشاريع كل اللي محتاجينه من السقف للحيطة بأسعار واضحة وخدمة سريعة.
+            وأصحاب المشاريع كل اللي محتاجينه من السقف للحيطة بتشكيلة متنوعة وخدمة سريعة.
           </p>
         </div>
       </section>
@@ -135,7 +135,7 @@ function AboutPage() {
 
         <div className="mt-10 text-center">
           <Button asChild size="lg" variant="secondary">
-            <Link to="/">ابدأ التسوق</Link>
+            <Link to="/">تصفح المنتجات</Link>
           </Button>
         </div>
       </section>

@@ -3,8 +3,7 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { isHordiPressure, parseSize, productsForPressure } from "@/lib/hordi";
-import { useCart } from "@/lib/cart";
-import { DEFAULT_SALES_WHATSAPP, formatSAR, whatsappLink } from "@/lib/format";
+import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { HordiTabs } from "@/components/hordi-tabs";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
@@ -20,12 +19,12 @@ export const Route = createFileRoute("/hordi/$pressure")({
       { title: `هوردي ضغط ${params.pressure} | مؤسسة المتوكل للتجارة` },
       {
         name: "description",
-        content: `كل مقاسات هوردي ضغط ${params.pressure} بالأسعار — 25×40×200 و30×40×200 و35×40×200 و40×40×200.`,
+        content: `كل مقاسات هوردي ضغط ${params.pressure} — اختار المقاس والكمية واطلب عرض سعر على واتساب.`,
       },
       { property: "og:title", content: `هوردي ضغط ${params.pressure} | مؤسسة المتوكل للتجارة` },
       {
         property: "og:description",
-        content: `مقاسات وأسعار هوردي ضغط ${params.pressure} من مؤسسة المتوكل.`,
+        content: `شوف مقاسات هوردي ضغط ${params.pressure} وكلم المبيعات على واتساب.`,
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -38,7 +37,6 @@ function HordiPressurePage() {
   const p = Number(pressure);
   const { data: catalog } = useSuspenseQuery(catalogQueryOptions);
   const { data: settings } = useQuery(settingsQueryOptions);
-  const { items, total } = useCart();
   const salesWa = settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP;
 
   const hordiCat = catalog.categories.find((c) => c.slug === "hordi");
@@ -68,7 +66,7 @@ function HordiPressurePage() {
         <div>
           <h1 className="font-display text-3xl font-bold">هوردي ضغط {p}</h1>
           <p className="mt-1 text-muted-foreground">
-            اختار المقاس وحدد الكمية — {products.length} مقاسات متاحة
+            اختار المقاس وحدد الكمية واطلب السعر على واتساب — {products.length} مقاسات
           </p>
         </div>
       </div>
@@ -103,17 +101,6 @@ function HordiPressurePage() {
               />
             );
           })}
-        </div>
-      )}
-
-      {items.length > 0 && (
-        <div className="sticky bottom-4 mt-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-card p-4 shadow-3d">
-          <p className="text-sm">
-            السلة فيها <b>{items.length}</b> نوع بإجمالي تقريبي <b>{formatSAR(total)}</b>
-          </p>
-          <Button asChild>
-            <Link to="/cart">إتمام الشراء</Link>
-          </Button>
         </div>
       )}
     </div>

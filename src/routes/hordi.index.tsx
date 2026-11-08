@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { HORDI_PRESSURES, parseSize, productsForPressure } from "@/lib/hordi";
 import { HORDI_IMAGE } from "@/lib/product-images";
-import { DEFAULT_SALES_WHATSAPP, formatSAR, whatsappLink } from "@/lib/format";
+import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { HordiTabs } from "@/components/hordi-tabs";
 import { Tilt } from "@/components/tilt";
 
@@ -17,12 +17,12 @@ export const Route = createFileRoute("/hordi/")({
       {
         name: "description",
         content:
-          "هوردي بضغط 8 و10 و12 و14 و16 و18 بمقاسات 25×40×200 و30×40×200 و35×40×200 و40×40×200 — اختار الضغط واطلب أونلاين.",
+          "هوردي بضغط 8 و10 و12 و14 و16 و18 ومقاسات متعددة — اختار الضغط واطلب عرض سعر على واتساب.",
       },
       { property: "og:title", content: "الهوردي بكل الضغوط | مؤسسة المتوكل للتجارة" },
       {
         property: "og:description",
-        content: "اختار ضغط الهوردي وشوف كل المقاسات والأسعار.",
+        content: "اختار ضغط الهوردي وشوف المقاسات وكلم المبيعات على واتساب.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -70,7 +70,6 @@ function HordiIndexPage() {
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {HORDI_PRESSURES.map((p) => {
           const items = productsForPressure(hordi, p);
-          const minPrice = items.length ? Math.min(...items.map((i) => i.price)) : null;
           return (
             <Tilt key={p} className="rounded-2xl border bg-block">
               <Link
@@ -104,16 +103,11 @@ function HordiIndexPage() {
                     </span>
                   ))}
                   {items.length === 0 && (
-                    <span className="text-xs text-muted-foreground">
-                      اطلبه على واتساب
-                    </span>
+                    <span className="text-xs text-muted-foreground">اطلبه على واتساب</span>
                   )}
                 </div>
                 <div className="mt-auto flex items-center justify-between pt-5 text-sm">
-                  <span className="text-muted-foreground">
-                    {items.length} مقاسات
-                    {minPrice !== null && <> — يبدأ من <b className="text-foreground">{formatSAR(minPrice)}</b></>}
-                  </span>
+                  <span className="text-muted-foreground">{items.length} مقاسات</span>
                   <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                 </div>
               </Link>

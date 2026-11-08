@@ -91,14 +91,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "مؤسسة المتوكل للتجارة: أدوات بناء أساسية، رولات عزل، أدوات لياسة، والهوردي بجميع مقاساته. اشترِ أونلاين مع دفع إلكتروني وفاة PDF.",
+          "مؤسسة المتوكل للتجارة: أدوات بناء أساسية، رولات عزل، أدوات لياسة، والهوردي بجميع مقاساته. اطلب عرض سعر على واتساب.",
       },
       { name: "author", content: "مؤسسة المتوكل للتجارة" },
       { property: "og:title", content: "مؤسسة المتوكل للتجارة | مواد بناء وعوازل" },
       {
         property: "og:description",
         content:
-          "أدوات بناء أساسية، رولات عزل، أدوات لياسة، والهوردي بجميع مقاساته. اشترِ أونلاين مع دفع إلكتروني.",
+          "أدوات بناء أساسية، رولات عزل، أدوات لياسة، والهوردي بجميع مقاساته. كلم المبيعات على واتساب.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -220,11 +220,6 @@ function SiteFooter() {
             <li>
               <Link to="/about" className="hover:underline">
                 من نحن
-              </Link>
-            </li>
-            <li>
-              <Link to="/cart" className="hover:underline">
-                سلة المشتريات
               </Link>
             </li>
             <li>
