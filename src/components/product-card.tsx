@@ -109,8 +109,8 @@ export function ProductCard({
           اختار الكمية وكلم المبيعات لمعرفة السعر والتوفر.
         </p>
 
-        <div className="mt-auto flex items-center gap-2 pt-4">
-          <div className="flex items-center rounded-lg border">
+        <div className="mt-auto flex flex-col gap-3 pt-4">
+          <div className="flex items-center justify-between rounded-lg border">
             <button
               type="button"
               aria-label="زيادة الكمية"
