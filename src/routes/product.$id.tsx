@@ -1,14 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowRight, MessageCircle } from "lucide-react";
-import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { ArrowRight } from "lucide-react";
+import { catalogQueryOptions } from "@/lib/queries";
 import { getProduct } from "@/lib/store.functions";
-import { DEFAULT_SALES_WHATSAPP, formatSAR, whatsappLink } from "@/lib/format";
 import { productImage } from "@/lib/product-images";
 import { ProductCard } from "@/components/product-card";
-import { Button } from "@/components/ui/button";
 import { Tilt } from "@/components/tilt";
-import { startingPrice } from "@/lib/variants";
 
 function queryOptionsForProduct(id: string) {
   return queryOptions({
@@ -21,9 +18,7 @@ export const Route = createFileRoute("/product/$id")({
   loader: ({ context, params }) =>
     Promise.all([
       context.queryClient.ensureQueryData(catalogQueryOptions),
-      context.queryClient.ensureQueryData(
-        queryOptionsForProduct(params.id),
-      ),
+      context.queryClient.ensureQueryData(queryOptionsForProduct(params.id)),
     ]).then(([, product]) => {
       if (!product) throw notFound();
     }),
@@ -33,13 +28,12 @@ export const Route = createFileRoute("/product/$id")({
       { title: "تفاصيل المنتج | مؤسسة المتوكل للتجارة" },
       {
         name: "description",
-        content:
-          "تفاصيل المنتج وسعره من مؤسسة المتوكل للتجارة — حدد الكمية وأضفها للسلة.",
+        content: "تفاصيل المنتج ومقاساته — اختار الكمية واطلب السعر على واتساب من مؤسسة المتوكل للتجارة.",
       },
       { property: "og:title", content: "تفاصيل المنتج | مؤسسة المتوكل للتجارة" },
       {
         property: "og:description",
-        content: "تفاصيل المنتج من مؤسسة المتوكل للتجارة — السعر والكمية وإضافة للسلة.",
+        content: "اختار المقاس والكمية وكلم مسؤول المبيعات على واتساب.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -51,12 +45,9 @@ function ProductPage() {
   const { id } = Route.useParams();
   const { data: product } = useSuspenseQuery(queryOptionsForProduct(id));
   const { data: catalog } = useSuspenseQuery(catalogQueryOptions);
-  const { data: settings } = useQuery(settingsQueryOptions);
 
   if (!product) return null;
   const category = catalog.categories.find((c) => c.id === product.category_id);
-
-  const quoteMessage = `السلام عليكم، محتاج عرض سعر: ${product.name_ar}${product.specs_ar ? ` (${product.specs_ar})` : ""}`;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -82,7 +73,7 @@ function ProductPage() {
       )}
 
       <div className="mt-6 grid gap-8 md:grid-cols-2">
-        <Tilt className="overflow-hidden rounded-2xl border bg-card">
+        <Tilt className="h-fit overflow-hidden rounded-2xl border bg-card">
           <img
             src={productImage(product.image_url, category?.slug)}
             alt={product.name_ar}
@@ -98,47 +89,23 @@ function ProductPage() {
           )}
           {product.variants.length > 0 && (
             <div className="mt-4 overflow-hidden rounded-xl border">
-              <p className="bg-secondary px-3 py-2 text-sm font-bold">المقاسات والأسعار</p>
+              <p className="bg-secondary px-3 py-2 text-sm font-bold">المقاسات المتاحة</p>
               <ul className="divide-y text-sm">
                 {product.variants.map((v) => (
                   <li key={v.id} className="flex justify-between px-3 py-2">
-                    <span>
-                      مقاس {v.label_ar}
-                      {!v.in_stock && (
-                        <span className="text-muted-foreground"> (غير متوفر)</span>
-                      )}
-                    </span>
-                    <span className="font-bold">{formatSAR(v.price)}</span>
+                    <span>مقاس {v.label_ar}</span>
+                    {!v.in_stock && <span className="text-muted-foreground">غير متوفر</span>}
                   </li>
                 ))}
               </ul>
             </div>
           )}
-          <div className="mt-4 flex items-baseline gap-2">
-            {product.variants.length > 0 && (
-              <span className="text-sm text-muted-foreground">يبدأ من</span>
-            )}
-            <span className="font-display text-4xl font-extrabold">
-              {formatSAR(startingPrice(product))}
-            </span>
-            <span className="text-sm text-muted-foreground">/ {product.unit_ar}</span>
-          </div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            السعر قبل ضريبة القيمة المضافة 15% — الضريبة بتتضاف في الفاتورة، والسعر بيتأكد عند إصدارها.
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            لمعرفة السعر والتوفر، اختار المقاس والكمية وابعت التفاصيل لمسؤول المبيعات على واتساب.
           </p>
           <div className="mt-6">
             <ProductCard product={product} categorySlug={category?.slug} />
           </div>
-          <Button asChild variant="outline" className="mt-4">
-            <a
-              href={whatsappLink(settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP, quoteMessage)}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <MessageCircle className="h-4 w-4" />
-              اطلب عرض سعر على واتساب
-            </a>
-          </Button>
         </div>
       </div>
     </div>

@@ -52,6 +52,20 @@ export function localPhone(intl: string | null | undefined): string {
 
 export const DEFAULT_SALES_WHATSAPP = "966501215513";
 
+/** رسالة عرض السعر: تفاصيل الصنف فقط، من غير أسعار أو إجماليات. */
+export function productQuoteMessage(item: {
+  name: string;
+  specs?: string | null;
+  qty: number;
+  unit: string;
+}): string {
+  return [
+    "السلام عليكم، محتاج أعرف السعر والتوفر للصنف ده من مؤسسة المتوكل:",
+    `• ${item.name}${item.specs ? ` (${item.specs})` : ""}`,
+    `• الكمية: ${item.qty} ${item.unit}`,
+  ].join("\n");
+}
+
 export type OrderNotice = {
   orderNumber: string;
   company: string;

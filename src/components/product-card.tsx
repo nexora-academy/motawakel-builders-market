@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
-import { toast } from "sonner";
-import { useCart } from "@/lib/cart";
-import { formatSAR } from "@/lib/format";
+import { useQuery } from "@tanstack/react-query";
+import { MessageCircle, Minus, Plus } from "lucide-react";
+import { settingsQueryOptions } from "@/lib/queries";
+import { DEFAULT_SALES_WHATSAPP, productQuoteMessage, whatsappLink } from "@/lib/format";
 import { productImage } from "@/lib/product-images";
 import type { Product } from "@/lib/store.functions";
 import { Button } from "@/components/ui/button";
@@ -29,15 +29,29 @@ export function ProductCard({
   title?: string | undefined;
   subtitle?: string | null | undefined;
 }) {
-  const { add } = useCart();
+  const { data: settings } = useQuery(settingsQueryOptions);
   const [qty, setQty] = useState(1);
   const variants = product.variants ?? [];
   const [variantId, setVariantId] = useState<string | null>(
     () => defaultVariant(variants)?.id ?? null,
   );
   const variant = variants.find((v) => v.id === variantId) ?? null;
-  const price = variant ? variant.price : product.price;
-  const available = product.in_stock && (variant ? variant.in_stock : true);
+  const canAsk = qty > 0 && (variants.length === 0 || variant !== null);
+  const quoteHref = whatsappLink(
+    settings?.["sales_whatsapp"] ?? DEFAULT_SALES_WHATSAPP,
+    productQuoteMessage({
+      name: product.name_ar,
+      specs: variant ? variantSpecs(variant.label_ar, product.specs_ar) : product.specs_ar,
+      qty,
+      unit: product.unit_ar,
+    }),
+  );
+  const buttonContent = (
+    <>
+      <MessageCircle className="h-4 w-4" />
+      اطلب السعر على واتساب
+    </>
+  );
 
   return (
     <Tilt max={6} className="flex flex-col overflow-hidden rounded-2xl border bg-card">
@@ -82,7 +96,7 @@ export function ProductCard({
               <SelectContent>
                 {variants.map((v) => (
                   <SelectItem key={v.id} value={v.id} disabled={!v.in_stock}>
-                    مقاس {v.label_ar} — {formatSAR(v.price)}
+                    مقاس {v.label_ar}
                     {!v.in_stock ? " (غير متوفر)" : ""}
                   </SelectItem>
                 ))}
@@ -91,15 +105,12 @@ export function ProductCard({
           </div>
         )}
 
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="font-display text-2xl font-extrabold text-foreground">
-            {formatSAR(price)}
-          </span>
-          <span className="text-xs text-muted-foreground">/ {product.unit_ar} · قبل الضريبة</span>
-        </div>
+        <p className="mt-3 text-sm text-muted-foreground">
+          اختار الكمية وكلم المبيعات لمعرفة السعر والتوفر.
+        </p>
 
-        <div className="mt-auto flex items-center gap-2 pt-4">
-          <div className="flex items-center rounded-lg border">
+        <div className="mt-auto flex flex-col gap-3 pt-4">
+          <div className="flex items-center justify-between rounded-lg border">
             <button
               type="button"
               aria-label="زيادة الكمية"
@@ -127,29 +138,17 @@ export function ProductCard({
               <Minus className="h-4 w-4" />
             </button>
           </div>
-          <Button
-            className="flex-1"
-            disabled={!available || qty <= 0 || (variants.length > 0 && !variant)}
-            onClick={() => {
-              add(
-                {
-                  productId: product.id,
-                  variantId: variant?.id ?? null,
-                  name: product.name_ar,
-                  specs: variant ? variantSpecs(variant.label_ar, product.specs_ar) : product.specs_ar,
-                  unit: product.unit_ar,
-                  price: Number(price),
-                },
-                qty,
-              );
-              toast.success(
-                `تمت إضافة ${product.name_ar}${variant ? ` مقاس ${variant.label_ar}` : ""} للسلة`,
-              );
-            }}
-          >
-            <ShoppingCart className="h-4 w-4" />
-            أضف للسلة
-          </Button>
+          {canAsk ? (
+            <Button asChild className="flex-1">
+              <a href={quoteHref} target="_blank" rel="noreferrer">
+                {buttonContent}
+              </a>
+            </Button>
+          ) : (
+            <Button className="flex-1" disabled>
+              {buttonContent}
+            </Button>
+          )}
         </div>
       </div>
     </Tilt>

@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   MessageCircle,
-  ShoppingCart,
   Menu,
   LogOut,
   LayoutDashboard,
   Package,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useCart } from "@/lib/cart";
 import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
@@ -34,7 +32,6 @@ type SessionState = {
 };
 
 export function SiteHeader() {
-  const { count, hydrated } = useCart();
   const [session, setSession] = useState<SessionState>({
     userId: null,
     isAdmin: false,
@@ -170,16 +167,6 @@ export function SiteHeader() {
         )}
 
         <ThemeToggle />
-        <Button asChild variant="outline" size="sm" className="relative">
-          <Link to="/cart" aria-label="سلة المشتريات">
-            <ShoppingCart className="h-5 w-5" />
-            {hydrated && count > 0 && (
-              <span className="absolute -top-2 -left-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-accent-foreground">
-                {count > 999 ? "999+" : count}
-              </span>
-            )}
-          </Link>
-        </Button>
 
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger asChild>
