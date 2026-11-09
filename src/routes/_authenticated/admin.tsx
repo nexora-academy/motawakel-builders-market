@@ -1,3 +1,4 @@
+import { Textarea } from "@/components/ui/textarea";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -103,6 +104,7 @@ type AdminProduct = {
   category_id: string;
   name_ar: string;
   specs_ar: string | null;
+  description_ar: string | null;
   unit_ar: string;
   price: number;
   in_stock: boolean;
@@ -460,7 +462,7 @@ function ProductsTab() {
       const { data } = await supabase
         .from("products")
         .select(
-          "id, category_id, name_ar, specs_ar, unit_ar, price, in_stock, is_active, image_url",
+          "id, category_id, name_ar, specs_ar, description_ar, unit_ar, price, in_stock, is_active, image_url",
         )
         .order("sort_order");
       return (data ?? []).map((p) => ({
@@ -479,7 +481,7 @@ function ProductsTab() {
       <AddProductForm categories={cats} onAdded={() => void queryClient.invalidateQueries({ queryKey: ["admin-products"] })} />
       {prods.map((p) => (
         <ProductRow
-          key={`${p.id}-${p.name_ar}-${p.unit_ar}-${p.specs_ar ?? ""}-${p.category_id}`}
+          key={`${p.id}-${p.name_ar}-${p.unit_ar}-${p.specs_ar ?? ""}-${p.category_id}-${p.description_ar ?? ""}`}
           product={p}
           categoryName={catName(p.category_id)}
           categories={cats}
@@ -634,6 +636,7 @@ function ProductRow({
   const [showSizes, setShowSizes] = useState(false);
   const [name, setName] = useState(product.name_ar);
   const [specs, setSpecs] = useState(product.specs_ar ?? "");
+  const [description, setDescription] = useState(product.description_ar ?? "");
   const [unit, setUnit] = useState(product.unit_ar);
   const [categoryId, setCategoryId] = useState(product.category_id);
 
@@ -673,6 +676,7 @@ function ProductRow({
     const ok = await update({
       name_ar: name.trim(),
       specs_ar: specs.trim() || null,
+      description_ar: description.trim() || null,
       unit_ar: normalizeUnit(unit),
       category_id: categoryId,
     });
@@ -853,6 +857,16 @@ function ProductRow({
               </SelectContent>
             </Select>
           </div>
+          <div className="grid gap-1 sm:col-span-2">
+            <Label>تفاصيل المنتج (بتظهر للعميل في صفحة الصنف — كل سطر نقطة)</Label>
+            <Textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              maxLength={2000}
+              rows={5}
+              placeholder="مثال: مناسب للأسقف والحوائط&#10;مقاوم للرطوبة"
+            />
+          </div>
           <div className="flex gap-2 sm:col-span-2">
             <Button onClick={() => void saveDetails()} disabled={saving}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -863,6 +877,7 @@ function ProductRow({
               onClick={() => {
                 setName(product.name_ar);
                 setSpecs(product.specs_ar ?? "");
+                setDescription(product.description_ar ?? "");
                 setUnit(product.unit_ar);
                 setCategoryId(product.category_id);
                 setEditing(false);

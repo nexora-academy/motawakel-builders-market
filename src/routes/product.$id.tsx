@@ -100,6 +100,20 @@ function ProductPage() {
               </ul>
             </div>
           )}
+          {product.description_ar && (
+            <div className="mt-4 rounded-xl border bg-card p-4">
+              <p className="mb-2 text-sm font-bold">تفاصيل المنتج</p>
+              <ul className="list-disc space-y-1 pr-5 text-sm leading-relaxed">
+                {product.description_ar
+                  .split("\n")
+                  .map((l) => l.trim())
+                  .filter(Boolean)
+                  .map((l, i) => (
+                    <li key={i}>{l}</li>
+                  ))}
+              </ul>
+            </div>
+          )}
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
             لمعرفة السعر والتوفر، اختار المقاس والكمية وابعت التفاصيل لمسؤول المبيعات على واتساب.
           </p>
