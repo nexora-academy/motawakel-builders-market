@@ -105,3 +105,15 @@ export function orderNoticeMessage(o: OrderNotice): string {
     .filter((l): l is string => l !== null)
     .join("\n");
 }
+
+/** رسالة عرض سعر لكذا صنف من السلة — من غير أسعار. */
+export function cartQuoteMessage(
+  items: { name: string; specs?: string | null; qty: number; unit: string }[],
+): string {
+  return [
+    "السلام عليكم، محتاج عرض سعر من مؤسسة المتوكل للأصناف دي:",
+    ...items.map(
+      (it, i) => `${i + 1}. ${it.name}${it.specs ? ` (${it.specs})` : ""} — الكمية: ${it.qty} ${it.unit}`,
+    ),
+  ].join("\n");
+}

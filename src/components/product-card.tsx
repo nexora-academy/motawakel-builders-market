@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { MessageCircle, Minus, Plus } from "lucide-react";
+import { MessageCircle, Minus, Plus, ShoppingCart } from "lucide-react";
+import { toast } from "sonner";
+import { useCart } from "@/lib/cart";
 import { settingsQueryOptions } from "@/lib/queries";
 import { DEFAULT_SALES_WHATSAPP, productQuoteMessage, whatsappLink } from "@/lib/format";
 import { productImage } from "@/lib/product-images";
@@ -31,6 +33,7 @@ export function ProductCard({
 }) {
   const { data: settings } = useQuery(settingsQueryOptions);
   const [qty, setQty] = useState(1);
+  const cart = useCart();
   const variants = product.variants ?? [];
   const [variantId, setVariantId] = useState<string | null>(
     () => defaultVariant(variants)?.id ?? null,
@@ -138,6 +141,27 @@ export function ProductCard({
               <Minus className="h-4 w-4" />
             </button>
           </div>
+          <Button
+            variant="outline"
+            disabled={!canAsk}
+            onClick={() => {
+              cart.add(
+                {
+                  productId: product.id,
+                  variantId: variant?.id ?? null,
+                  name: product.name_ar,
+                  specs: variant ? variantSpecs(variant.label_ar, product.specs_ar) : product.specs_ar,
+                  unit: product.unit_ar,
+                  price: 0,
+                },
+                qty,
+              );
+              toast.success("اتضاف للسلة");
+            }}
+          >
+            <ShoppingCart className="h-4 w-4" />
+            أضف للسلة
+          </Button>
           {canAsk ? (
             <Button asChild className="flex-1">
               <a href={quoteHref} target="_blank" rel="noreferrer">
