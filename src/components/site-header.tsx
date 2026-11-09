@@ -6,7 +6,9 @@ import {
   LogOut,
   LayoutDashboard,
   Package,
+  ShoppingCart,
 } from "lucide-react";
+import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
 import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { BrandLogo } from "@/components/brand-logo";
@@ -38,6 +40,8 @@ export function SiteHeader() {
     loaded: false,
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const cart = useCart();
+  const cartLines = cart.hydrated ? cart.items.length : 0;
 
   useEffect(() => {
     let active = true;
@@ -133,6 +137,18 @@ export function SiteHeader() {
         <nav className="mr-4 hidden items-center gap-1 lg:flex">{navLinks}</nav>
 
         <div className="flex-1" />
+
+        <Button asChild variant="ghost" size="sm" className="relative">
+          <Link to="/cart" aria-label="سلة عرض السعر">
+            <ShoppingCart className="h-5 w-5" />
+            <span className="hidden sm:inline">السلة</span>
+            {cartLines > 0 && (
+              <span className="absolute -top-1 -left-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-xs font-bold text-accent-foreground">
+                {cartLines}
+              </span>
+            )}
+          </Link>
+        </Button>
 
         {session.loaded && session.isAdmin && (
           <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
