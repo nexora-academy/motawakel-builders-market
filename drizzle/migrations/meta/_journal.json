@@ -43,6 +43,13 @@
       "when": 1793014669275,
       "tag": "0005_product_variants",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794237962374,
+      "tag": "0006_product_description",
+      "breakpoints": true
     }
   ]
 }

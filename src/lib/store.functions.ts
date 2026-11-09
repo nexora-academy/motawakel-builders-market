@@ -23,6 +23,7 @@ export type Product = {
   category_id: string;
   name_ar: string;
   specs_ar: string | null;
+  description_ar: string | null;
   unit_ar: string;
   price: number;
   in_stock: boolean;
@@ -37,7 +38,7 @@ export type Catalog = {
 };
 
 const PRODUCT_COLUMNS =
-  "id, category_id, name_ar, specs_ar, unit_ar, price, in_stock, image_url";
+  "id, category_id, name_ar, specs_ar, description_ar, unit_ar, price, in_stock, image_url";
 
 type PublicClient = ReturnType<typeof makePublicClient>;
 
