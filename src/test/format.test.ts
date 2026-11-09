@@ -28,3 +28,16 @@ describe("whatsappLink", () => {
     );
   });
 });
+
+import { cartQuoteMessage as cqm } from "@/lib/format";
+describe("cart quote message", () => {
+  it("lists every item with qty and no prices", () => {
+    const m = cqm([
+      { name: "مسمار", specs: "مقاس 3", qty: 5, unit: "كرتونة" },
+      { name: "سلك", qty: 2, unit: "لفة" },
+    ]);
+    expect(m).toContain("1. مسمار (مقاس 3) — الكمية: 5 كرتونة");
+    expect(m).toContain("2. سلك — الكمية: 2 لفة");
+    expect(m).not.toContain("ر.س");
+  });
+});
