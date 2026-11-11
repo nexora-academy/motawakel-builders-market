@@ -25,7 +25,9 @@ export function ProductCard({
   categorySlug,
   title,
   subtitle,
+  panel = false,
 }: {
+  panel?: boolean;
   product: Product;
   categorySlug?: string | undefined;
   title?: string | undefined;
@@ -57,8 +59,8 @@ export function ProductCard({
   );
 
   return (
-    <Tilt max={6} className="flex flex-col overflow-hidden rounded-2xl border bg-card">
-      <Link
+    <Tilt max={panel ? 0 : 6} className="flex flex-col overflow-hidden rounded-2xl border bg-card">
+      {!panel && (<Link
         to="/product/$id"
         params={{ id: product.id }}
         className="relative block aspect-[4/3] overflow-hidden bg-secondary"
@@ -76,9 +78,10 @@ export function ProductCard({
             غير متوفر حاليًا
           </Badge>
         )}
-      </Link>
+      </Link>)}
 
       <div className="flex flex-1 flex-col p-4">
+        {!panel && (<>
         <Link
           to="/product/$id"
           params={{ id: product.id }}
@@ -89,6 +92,7 @@ export function ProductCard({
         {(subtitle ?? product.specs_ar) && (
           <p className="mt-0.5 text-sm text-muted-foreground">{subtitle ?? product.specs_ar}</p>
         )}
+        </>)}
 
         {variants.length > 0 && (
           <div className="mt-3">
