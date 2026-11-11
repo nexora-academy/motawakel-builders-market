@@ -72,8 +72,8 @@ function ProductPage() {
         </>
       )}
 
-      <div className="mt-6 grid gap-8 md:grid-cols-2">
-        <Tilt className="h-fit overflow-hidden rounded-2xl border bg-card">
+      <div className="mt-6 grid items-start gap-8 md:grid-cols-2">
+        <Tilt className="h-fit overflow-hidden rounded-2xl border bg-card md:sticky md:top-24">
           <img
             src={productImage(product.image_url, category?.slug)}
             alt={product.name_ar}
@@ -118,7 +118,7 @@ function ProductPage() {
             لمعرفة السعر والتوفر، اختار المقاس والكمية وابعت التفاصيل لمسؤول المبيعات على واتساب.
           </p>
           <div className="mt-6">
-            <ProductCard product={product} categorySlug={category?.slug} />
+            <ProductCard product={product} categorySlug={category?.slug} panel />
           </div>
         </div>
       </div>
