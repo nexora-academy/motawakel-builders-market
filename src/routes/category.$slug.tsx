@@ -68,9 +68,6 @@ function CategoryPage() {
       <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-bold">{title}</h1>
-          {category?.description_ar && (
-            <p className="mt-2 max-w-2xl text-muted-foreground">{category.description_ar}</p>
-          )}
         </div>
         <Button asChild variant="outline">
           <a
