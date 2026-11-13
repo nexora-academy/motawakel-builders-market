@@ -59,7 +59,7 @@ function Index() {
           aria-hidden
           width={1600}
           height={800}
-          className="absolute inset-0 -z-10 h-full w-full object-cover opacity-15 mix-blend-luminosity"
+          className="absolute inset-0 -z-10 h-full w-full object-cover opacity-30"
         />
         <div className="mx-auto grid max-w-7xl items-center gap-6 px-4 py-12 lg:grid-cols-2 lg:py-20">
           <div className="min-w-0">
@@ -127,9 +127,6 @@ function Index() {
                 </div>
                 <div className="pop-out p-4">
                   <h3 className="font-display text-lg font-bold">{cat.name_ar}</h3>
-                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                    {cat.description_ar}
-                  </p>
                 </div>
               </Link>
             </Tilt>

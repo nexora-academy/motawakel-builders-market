@@ -112,9 +112,6 @@ export function ProductCard({
           </div>
         )}
 
-        <p className={panel ? "hidden" : "mt-3 text-sm text-muted-foreground"}>
-          اختار الكمية وكلم المبيعات لمعرفة السعر والتوفر.
-        </p>
 
         <div className="mt-auto flex flex-col gap-3 pt-4">
           <div className="flex items-center justify-between rounded-lg border">
