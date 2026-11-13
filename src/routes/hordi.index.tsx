@@ -49,10 +49,6 @@ function HordiIndexPage() {
       <div className="mt-4 grid items-center gap-6 md:grid-cols-[1fr_320px]">
         <div>
           <h1 className="font-display text-3xl font-bold sm:text-4xl">الهوردي</h1>
-          <p className="mt-2 max-w-2xl text-muted-foreground">
-            {hordiCat?.description_ar ??
-              "بلوك هوردي فوم للأسقف — اختار الضغط المناسب لمشروعك وهتلاقي كل المقاسات."}
-          </p>
         </div>
         <Tilt className="overflow-hidden rounded-2xl border bg-card">
           <img
