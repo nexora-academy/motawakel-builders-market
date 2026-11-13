@@ -1,5 +1,6 @@
 import catTools from "@/assets/cat-tools.jpg";
-import catInsulation from "@/assets/cat-insulation.jpg";
+import catInsulationPhoto from "@/assets/insulation-rolls-warehouse.jpg.asset.json";
+const catInsulation = catInsulationPhoto.url;
 import catPlaster from "@/assets/cat-plaster.jpg";
 import hordiPhoto from "@/assets/products/hordi.jpg.asset.json";
 
