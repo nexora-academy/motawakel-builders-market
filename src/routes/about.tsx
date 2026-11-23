@@ -34,7 +34,9 @@ export const Route = createFileRoute("/about")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:url", content: "https://motawakel-builders-market.lovable.app/about" },
     ],
+    links: [{ rel: "canonical", href: "https://motawakel-builders-market.lovable.app/about" }],
   }),
 });
 

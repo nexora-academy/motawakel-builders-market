@@ -16,19 +16,21 @@ export const Route = createFileRoute("/hordi/$pressure")({
   component: HordiPressurePage,
   head: ({ params }) => ({
     meta: [
-      { title: `هوردي ضغط ${params.pressure} | مؤسسة المتوكل للتجارة` },
+      { title: `هوردي ضغط ${params.pressure} بالرياض | مؤسسة المتوكل للتجارة` },
       {
         name: "description",
         content: `كل مقاسات هوردي ضغط ${params.pressure} — اختار المقاس والكمية واطلب عرض سعر على واتساب.`,
       },
-      { property: "og:title", content: `هوردي ضغط ${params.pressure} | مؤسسة المتوكل للتجارة` },
+      { property: "og:title", content: `هوردي ضغط ${params.pressure} بالرياض | مؤسسة المتوكل للتجارة` },
       {
         property: "og:description",
         content: `شوف مقاسات هوردي ضغط ${params.pressure} وكلم المبيعات على واتساب.`,
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:url", content: `https://motawakel-builders-market.lovable.app/hordi/${params.pressure}` },
     ],
+    links: [{ rel: "canonical", href: `https://motawakel-builders-market.lovable.app/hordi/${params.pressure}` }],
   }),
 });
 

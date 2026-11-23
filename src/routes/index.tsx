@@ -20,13 +20,13 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "مؤسسة المتوكل للتجارة | مواد بناء وعوازل" },
+      { title: "مواد بناء وعوازل بالرياض | مؤسسة المتوكل للتجارة" },
       {
         name: "description",
         content:
-          "تصفح أدوات البناء الأساسية، رولات العزل، أدوات اللياسة، والهوردي بجميع الضغوط والمقاسات واطلب عرض سعر على واتساب.",
+          "مؤسسة المتوكل للتجارة بالرياض: تصفح أدوات البناء الأساسية، رولات العزل، أدوات اللياسة، والهوردي بجميع الضغوط والمقاسات واطلب عرض سعر على واتساب.",
       },
-      { property: "og:title", content: "مؤسسة المتوكل للتجارة | مواد بناء وعوازل" },
+      { property: "og:title", content: "مواد بناء وعوازل بالرياض | مؤسسة المتوكل للتجارة" },
       {
         property: "og:description",
         content:
@@ -34,7 +34,9 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:url", content: "https://motawakel-builders-market.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://motawakel-builders-market.lovable.app/" }],
   }),
 });
 

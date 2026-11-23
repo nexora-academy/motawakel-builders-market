@@ -13,20 +13,22 @@ export const Route = createFileRoute("/hordi/")({
   component: HordiIndexPage,
   head: () => ({
     meta: [
-      { title: "الهوردي بكل الضغوط | مؤسسة المتوكل للتجارة" },
+      { title: "هوردي بالرياض بكل الضغوط والمقاسات | مؤسسة المتوكل للتجارة" },
       {
         name: "description",
         content:
           "هوردي بضغط 8 و10 و12 و14 و16 و18 ومقاسات متعددة — اختار الضغط واطلب عرض سعر على واتساب.",
       },
-      { property: "og:title", content: "الهوردي بكل الضغوط | مؤسسة المتوكل للتجارة" },
+      { property: "og:title", content: "هوردي بالرياض بكل الضغوط والمقاسات | مؤسسة المتوكل للتجارة" },
       {
         property: "og:description",
         content: "اختار ضغط الهوردي وشوف المقاسات وكلم المبيعات على واتساب.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:url", content: "https://motawakel-builders-market.lovable.app/hordi" },
     ],
+    links: [{ rel: "canonical", href: "https://motawakel-builders-market.lovable.app/hordi" }],
   }),
 });
 

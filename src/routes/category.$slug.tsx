@@ -15,19 +15,21 @@ export const Route = createFileRoute("/category/$slug")({
   component: CategoryPage,
   head: ({ params }) => ({
     meta: [
-      { title: `${categoryTitle(params.slug)} | مؤسسة المتوكل للتجارة` },
+      { title: `${categoryTitle(params.slug)} بالرياض | مؤسسة المتوكل للتجارة` },
       {
         name: "description",
-        content: `تصفح منتجات ${categoryTitle(params.slug)} واطلب عرض سعر على واتساب من مؤسسة المتوكل للتجارة.`,
+        content: `تصفح منتجات ${categoryTitle(params.slug)} في الرياض واطلب عرض سعر على واتساب من مؤسسة المتوكل للتجارة.`,
       },
-      { property: "og:title", content: `${categoryTitle(params.slug)} | مؤسسة المتوكل للتجارة` },
+      { property: "og:title", content: `${categoryTitle(params.slug)} بالرياض | مؤسسة المتوكل للتجارة` },
       {
         property: "og:description",
         content: `اختار منتجات ${categoryTitle(params.slug)} وكلم المبيعات على واتساب.`,
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:url", content: `https://motawakel-builders-market.lovable.app/category/${params.slug}` },
     ],
+    links: [{ rel: "canonical", href: `https://motawakel-builders-market.lovable.app/category/${params.slug}` }],
   }),
 });
 
