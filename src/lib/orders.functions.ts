@@ -97,15 +97,4 @@ export const getOrderWithCode = createServerFn({ method: "POST" })
     return parsed;
   });
 
-export const markOrderPaid = createServerFn({ method: "POST" })
-  .inputValidator((input: { orderId: string; accessCode: string }) => input)
-  .handler(async ({ data }): Promise<{ ok: boolean }> => {
-    const supabase = makePublicClient();
-    const { error } = await supabase.rpc("set_order_paid", {
-      _order_id: data.orderId,
-      _access_code: data.accessCode,
-    });
-    return { ok: !error };
-  });
-
 export type { OrderStatus };

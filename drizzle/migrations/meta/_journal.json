@@ -57,6 +57,13 @@
       "when": 1794569777418,
       "tag": "0007_restrict_product_image_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795519585256,
+      "tag": "0008_lock_payment_functions",
+      "breakpoints": true
     }
   ]
 }

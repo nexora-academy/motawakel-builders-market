@@ -60,7 +60,8 @@ export const createPayment = createServerFn({ method: "POST" })
     if (!res.ok) throw new Error("MOYASAR_ERROR");
     const invoice = (await res.json()) as { id: string; url: string };
 
-    await supabase.rpc("set_payment_id", {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.rpc("set_payment_id", {
       _order_id: data.orderId,
       _access_code: data.accessCode,
       _payment_id: invoice.id,
@@ -95,7 +96,8 @@ export const checkPayment = createServerFn({ method: "POST" })
       if (!res.ok) return { checked: true, status: order.status };
       const invoice = (await res.json()) as { status: string };
       if (invoice.status === "paid") {
-        await supabase.rpc("set_order_paid", {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin.rpc("set_order_paid", {
           _order_id: data.orderId,
           _access_code: data.accessCode,
         });
