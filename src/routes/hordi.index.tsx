@@ -6,6 +6,7 @@ import { HORDI_PRESSURES, parseSize, productsForPressure } from "@/lib/hordi";
 import { HORDI_IMAGE } from "@/lib/product-images";
 import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { HordiTabs } from "@/components/hordi-tabs";
+import { RevealGrid } from "@/components/reveal";
 import { Tilt } from "@/components/tilt";
 
 export const Route = createFileRoute("/hordi/")({
@@ -65,7 +66,7 @@ function HordiIndexPage() {
 
       <HordiTabs />
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <RevealGrid className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {HORDI_PRESSURES.map((p) => {
           const items = productsForPressure(hordi, p);
           return (
@@ -112,7 +113,7 @@ function HordiIndexPage() {
             </Tilt>
           );
         })}
-      </div>
+      </RevealGrid>
 
       <div className="mt-8 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm">
         محتاج مقاس أو ضغط مش موجود؟{" "}

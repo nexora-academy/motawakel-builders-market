@@ -12,6 +12,7 @@ import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { CATEGORY_IMAGES } from "@/lib/product-images";
 import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { Hero3D } from "@/components/hero-3d";
+import { RevealGrid, WordReveal } from "@/components/reveal";
 import { Tilt } from "@/components/tilt";
 import heroImage from "@/assets/hero.jpg";
 
@@ -70,7 +71,7 @@ function Index() {
               جودة تُبنى عليها
             </span>
             <h1 className="mt-5 font-display text-4xl font-extrabold leading-tight sm:text-5xl">
-              مؤسسة المتوكل للتجارة
+              <WordReveal text="مؤسسة المتوكل للتجارة" />
             </h1>
             <p
               dir="ltr"
@@ -79,8 +80,11 @@ function Index() {
               ALMOTAWAKEL
             </p>
             <p className="mt-4 max-w-xl text-lg opacity-90">
-              كل اللي بيتك محتاجه من السقف للحيطة في مكان واحد: أدوات البناء،
-              رولات العزل، أدوات اللياسة، والهوردي بكل الضغوط والمقاسات.
+              <WordReveal
+                delay={400}
+                step={45}
+                text="كل اللي بيتك محتاجه من السقف للحيطة في مكان واحد: أدوات البناء، رولات العزل، أدوات اللياسة، والهوردي بكل الضغوط والمقاسات."
+              />
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
@@ -113,7 +117,7 @@ function Index() {
         <p className="mt-1 text-muted-foreground">
           اختر القسم والصنف والكمية، واطلب السعر من المبيعات على واتساب
         </p>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGrid className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {catalog.categories.map((cat) => (
             <Tilt key={cat.id} className="overflow-hidden rounded-2xl border bg-card">
               <Link {...categoryLink(cat.slug)} className="group block h-full">
@@ -133,11 +137,11 @@ function Index() {
               </Link>
             </Tilt>
           ))}
-        </div>
+        </RevealGrid>
       </section>
 
       {/* ليه نحن */}
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
+      <RevealGrid className="mx-auto grid max-w-7xl gap-6 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { icon: Building2, title: "خبرة في مواد البناء", text: "تنوع يغطي احتياجات موقعك كاملة" },
           { icon: MessagesSquare, title: "رد مباشر من المبيعات", text: "اعرف السعر والتوفر على واتساب" },
@@ -154,7 +158,7 @@ function Index() {
             </div>
           </div>
         ))}
-      </section>
+      </RevealGrid>
 
       {/* خطوات الطلب */}
       <section className="mx-auto max-w-7xl px-4 pb-16">

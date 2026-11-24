@@ -4,6 +4,7 @@ import { ArrowRight, MessageCircle } from "lucide-react";
 import { catalogQueryOptions, settingsQueryOptions } from "@/lib/queries";
 import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
+import { RevealGrid } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/category/$slug")({
@@ -104,11 +105,11 @@ function CategoryPage() {
           </Button>
         </div>
       ) : (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <RevealGrid className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((p) => (
             <ProductCard key={p.id} product={p} categorySlug={slug} />
           ))}
-        </div>
+        </RevealGrid>
       )}
     </div>
   );

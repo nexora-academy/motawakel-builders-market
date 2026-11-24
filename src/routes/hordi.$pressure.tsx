@@ -6,6 +6,7 @@ import { isHordiPressure, parseSize, productsForPressure } from "@/lib/hordi";
 import { DEFAULT_SALES_WHATSAPP, whatsappLink } from "@/lib/format";
 import { HordiTabs } from "@/components/hordi-tabs";
 import { ProductCard } from "@/components/product-card";
+import { RevealGrid } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/hordi/$pressure")({
@@ -90,7 +91,7 @@ function HordiPressurePage() {
           </Button>
         </div>
       ) : (
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGrid className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((pr) => {
             const size = parseSize(pr.name_ar);
             return (
@@ -103,7 +104,7 @@ function HordiPressurePage() {
               />
             );
           })}
-        </div>
+        </RevealGrid>
       )}
     </div>
   );
